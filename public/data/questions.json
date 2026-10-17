@@ -1,0 +1,1802 @@
+[
+  {
+    "id": "tec-e-01",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "HTML 在網頁開發中的主要用途是什麼？",
+    "options": [
+      "定義頁面結構",
+      "管理資料庫",
+      "控制硬體電壓",
+      "設定網路路由"
+    ],
+    "correctIndex": 0,
+    "explanation": "HTML 用標籤描述網頁內容的結構與語意。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-02",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "CSS 主要負責網頁的哪個部分？",
+    "options": [
+      "伺服器登入",
+      "資料備份",
+      "外觀與排版",
+      "網域註冊"
+    ],
+    "correctIndex": 2,
+    "explanation": "CSS 用於控制文字、顏色、間距及版面等樣式。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-03",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "哪一個通常是 JavaScript 檔案的副檔名？",
+    "options": [
+      ".jpg",
+      ".js",
+      ".mp3",
+      ".pdf"
+    ],
+    "correctIndex": 1,
+    "explanation": "JavaScript 程式碼檔案通常使用 .js 副檔名。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-04",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "瀏覽器網址以 HTTPS 開頭，通常代表什麼？",
+    "options": [
+      "網站完全不會有漏洞",
+      "無須連網",
+      "所有內容都免費",
+      "連線使用 TLS 加密"
+    ],
+    "correctIndex": 3,
+    "explanation": "HTTPS 使用 TLS 保護傳輸，不能保證網站本身絕對安全。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-05",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "下列哪個裝置主要用於輸入文字？",
+    "options": [
+      "鍵盤",
+      "螢幕",
+      "喇叭",
+      "投影機"
+    ],
+    "correctIndex": 0,
+    "explanation": "鍵盤是常見的文字輸入裝置。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-06",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "二進位數字系統使用哪兩個數字符號？",
+    "options": [
+      "1 與 2",
+      "0 與 1",
+      "0 與 9",
+      "2 與 8"
+    ],
+    "correctIndex": 1,
+    "explanation": "二進位只使用 0 和 1 表示數值。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-07",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "哪個 HTTP 方法通常用來讀取資源？",
+    "options": [
+      "POST",
+      "PATCH",
+      "GET",
+      "DELETE"
+    ],
+    "correctIndex": 2,
+    "explanation": "GET 通常用於請求讀取資源。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-08",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "Git 主要用於什麼？",
+    "options": [
+      "影像壓縮",
+      "無線充電",
+      "剪輯影片",
+      "版本控制"
+    ],
+    "correctIndex": 3,
+    "explanation": "Git 記錄檔案版本與修改歷史，便於協作與回溯。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-09",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "在一般鍵盤上，Ctrl + C 常用來做什麼？",
+    "options": [
+      "複製",
+      "貼上",
+      "儲存",
+      "重新整理"
+    ],
+    "correctIndex": 0,
+    "explanation": "在常見桌面應用程式中 Ctrl + C 是複製快捷鍵。",
+    "enabled": true
+  },
+  {
+    "id": "tec-e-10",
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "下列哪個是常見的關聯式資料庫查詢語言？",
+    "options": [
+      "CSS",
+      "SQL",
+      "HTML",
+      "SVG"
+    ],
+    "correctIndex": 1,
+    "explanation": "SQL 用於操作與查詢關聯式資料庫。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-01",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "在 JavaScript 中，Array.isArray([]) 的結果為何？",
+    "options": [
+      "false",
+      "undefined",
+      "true",
+      "null"
+    ],
+    "correctIndex": 2,
+    "explanation": "Array.isArray 可判斷值是否為陣列。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-02",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "HTTP 狀態碼 404 通常表示什麼？",
+    "options": [
+      "認證成功",
+      "伺服器過載",
+      "請求成功",
+      "找不到資源"
+    ],
+    "correctIndex": 3,
+    "explanation": "404 Not Found 表示伺服器找不到指定資源。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-03",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "Git 指令 `git status` 的主要作用是？",
+    "options": [
+      "檢視工作樹與暫存區狀態",
+      "刪除遠端分支",
+      "建立資料庫",
+      "啟動瀏覽器"
+    ],
+    "correctIndex": 0,
+    "explanation": "git status 呈現目前分支與檔案修改情況。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-04",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "SQL 中哪個子句用於篩選資料列？",
+    "options": [
+      "ORDER BY",
+      "WHERE",
+      "GROUP BY",
+      "LIMIT"
+    ],
+    "correctIndex": 1,
+    "explanation": "WHERE 依條件過濾符合要求的資料列。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-05",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "在 CSS 中，`display: flex` 最直接啟用什麼？",
+    "options": [
+      "資料加密",
+      "HTTP 快取",
+      "彈性盒版面配置",
+      "資料庫交易"
+    ],
+    "correctIndex": 2,
+    "explanation": "Flexbox 是一維的彈性排列機制。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-06",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "哪種格式經常用於 REST API 傳遞結構化資料？",
+    "options": [
+      "MP4",
+      "PNG",
+      "WAV",
+      "JSON"
+    ],
+    "correctIndex": 3,
+    "explanation": "JSON 是常見的文字資料交換格式。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-07",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "JavaScript 的 `===` 與 `==` 主要差別為何？",
+    "options": [
+      "前者不進行隱式型別轉換",
+      "前者只能比較數字",
+      "後者不能比較字串",
+      "兩者完全相同"
+    ],
+    "correctIndex": 0,
+    "explanation": "嚴格相等運算子通常不進行型別強制轉換。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-08",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "資料庫的 PRIMARY KEY 主要用來做什麼？",
+    "options": [
+      "壓縮表格",
+      "唯一識別資料列",
+      "顯示排序動畫",
+      "加快網路速度"
+    ],
+    "correctIndex": 1,
+    "explanation": "主鍵提供資料列的唯一識別。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-09",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "DNS 最主要的功能是什麼？",
+    "options": [
+      "編譯程式碼",
+      "繪製網頁",
+      "解析網域名稱",
+      "加密硬碟"
+    ],
+    "correctIndex": 2,
+    "explanation": "DNS 可將網域名稱解析成 IP 位址等紀錄。",
+    "enabled": true
+  },
+  {
+    "id": "tec-m-10",
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "在 JavaScript 中，`fetch()` 回傳的物件主要是哪一種？",
+    "options": [
+      "字串",
+      "HTMLElement",
+      "數字",
+      "Promise"
+    ],
+    "correctIndex": 3,
+    "explanation": "fetch 會回傳 Promise，解析後通常取得 Response 物件。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-01",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "SQL 的 `COUNT(column)` 與 `COUNT(*)` 差異為何？",
+    "options": [
+      "前者不計算該欄位為 NULL 的列",
+      "前者一定比較快",
+      "後者忽略所有 NULL 列",
+      "兩者都只計算唯一值"
+    ],
+    "correctIndex": 0,
+    "explanation": "COUNT(column) 忽略該欄位的 NULL，而 COUNT(*) 計算符合條件的所有資料列。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-02",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "JavaScript 微任務佇列常見的來源為何？",
+    "options": [
+      "setTimeout 回呼",
+      "Promise.then 回呼",
+      "滑鼠移動事件",
+      "requestAnimationFrame"
+    ],
+    "correctIndex": 1,
+    "explanation": "Promise 的反應回呼排入微任務佇列。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-03",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "在資料庫交易的 ACID 中，I 代表什麼？",
+    "options": [
+      "索引 Index",
+      "完整性 Integrity",
+      "隔離性 Isolation",
+      "識別性 Identity"
+    ],
+    "correctIndex": 2,
+    "explanation": "Isolation 指並行交易相互影響受到控制。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-04",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "下列何者是 HTTP 304 的典型意義？",
+    "options": [
+      "請求格式錯誤",
+      "伺服器內部錯誤",
+      "永久重新導向",
+      "資源未修改"
+    ],
+    "correctIndex": 3,
+    "explanation": "304 Not Modified 可用於條件式請求的快取重用。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-05",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "二元搜尋法要求搜尋範圍具備哪項重要條件？",
+    "options": [
+      "資料依比較規則排序",
+      "資料必須是字串",
+      "資料必須存於 SQL",
+      "陣列長度是偶數"
+    ],
+    "correctIndex": 0,
+    "explanation": "二元搜尋需利用已排序結構排除一半候選範圍。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-06",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "在 SQL JOIN 中，LEFT JOIN 會保留哪一側資料表的所有列？",
+    "options": [
+      "右表",
+      "左表",
+      "兩表交集",
+      "兩表都不保留"
+    ],
+    "correctIndex": 1,
+    "explanation": "LEFT JOIN 保留左表資料列，未匹配右表部分為 NULL。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-07",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "IPv4 位址的長度是多少位元？",
+    "options": [
+      "16",
+      "64",
+      "32",
+      "128"
+    ],
+    "correctIndex": 2,
+    "explanation": "IPv4 位址長度為 32 位元。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-08",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "CSS `position: fixed` 在一般情況下主要相對於何者定位？",
+    "options": [
+      "最近的表格",
+      "文件最後一行",
+      "滑鼠游標",
+      "視窗（viewport）"
+    ],
+    "correctIndex": 3,
+    "explanation": "一般情況下 fixed 元素相對於 viewport 定位，但特定祖先屬性可能改變其包含區塊。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-09",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "在 Node.js CommonJS 模組中，通常用何者匯出資料？",
+    "options": [
+      "module.exports",
+      "document.write",
+      "localStorage",
+      "window.location"
+    ],
+    "correctIndex": 0,
+    "explanation": "CommonJS 模組使用 module.exports 輸出模組內容。",
+    "enabled": true
+  },
+  {
+    "id": "tec-h-10",
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "資料庫索引的典型代價是什麼？",
+    "options": [
+      "必然刪除重複列",
+      "增加儲存與寫入維護成本",
+      "使 SELECT 永遠變慢",
+      "無法使用主鍵"
+    ],
+    "correctIndex": 1,
+    "explanation": "索引加快部分查詢，但需要空間與維護更新成本。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-01",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "水在標準大氣壓下的沸點約為幾攝氏度？",
+    "options": [
+      "0°C",
+      "50°C",
+      "100°C",
+      "200°C"
+    ],
+    "correctIndex": 2,
+    "explanation": "在 1 atm 下純水沸點約為 100°C。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-02",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "地球繞哪顆恆星公轉？",
+    "options": [
+      "北極星",
+      "天狼星",
+      "織女星",
+      "太陽"
+    ],
+    "correctIndex": 3,
+    "explanation": "地球是太陽系的行星，繞太陽公轉。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-03",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "植物進行光合作用主要吸收哪種氣體？",
+    "options": [
+      "二氧化碳",
+      "氧氣",
+      "氮氣",
+      "氦氣"
+    ],
+    "correctIndex": 0,
+    "explanation": "植物光合作用使用二氧化碳與水等原料。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-04",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "人體主要負責泵送血液的器官是？",
+    "options": [
+      "肺",
+      "心臟",
+      "胃",
+      "腎臟"
+    ],
+    "correctIndex": 1,
+    "explanation": "心臟收縮提供血液循環所需的壓力。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-05",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "自然界中常見的水分子化學式是？",
+    "options": [
+      "CO₂",
+      "O₂",
+      "H₂O",
+      "NaCl"
+    ],
+    "correctIndex": 2,
+    "explanation": "一個水分子由兩個氫原子與一個氧原子組成。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-06",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "地球大氣中含量最多的氣體是？",
+    "options": [
+      "氧氣",
+      "二氧化碳",
+      "氬氣",
+      "氮氣"
+    ],
+    "correctIndex": 3,
+    "explanation": "地球乾燥空氣約 78% 為氮氣。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-07",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "聲音在真空中能傳播嗎？",
+    "options": [
+      "不能",
+      "能，且比空氣快",
+      "只在夜晚能",
+      "只在高溫時能"
+    ],
+    "correctIndex": 0,
+    "explanation": "聲波需要介質傳遞機械振動。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-08",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "太陽光中的可見光可用什麼裝置分散成不同顏色？",
+    "options": [
+      "顯微鏡",
+      "三稜鏡",
+      "溫度計",
+      "秒錶"
+    ],
+    "correctIndex": 1,
+    "explanation": "稜鏡使不同波長的光產生不同折射角。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-09",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "哪一種粒子帶負電？",
+    "options": [
+      "質子",
+      "中子",
+      "電子",
+      "氦核"
+    ],
+    "correctIndex": 2,
+    "explanation": "電子帶一個負基本電荷。",
+    "enabled": true
+  },
+  {
+    "id": "sci-e-10",
+    "category": "science",
+    "difficulty": "easy",
+    "question": "一般情況下，磁鐵有哪兩種磁極？",
+    "options": [
+      "東極與西極",
+      "上極與下極",
+      "正極與負極",
+      "北極與南極"
+    ],
+    "correctIndex": 3,
+    "explanation": "磁鐵通常有北極與南極。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-01",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "在 SI 制中，力的單位為何？",
+    "options": [
+      "牛頓（N）",
+      "焦耳（J）",
+      "瓦特（W）",
+      "帕斯卡（Pa）"
+    ],
+    "correctIndex": 0,
+    "explanation": "牛頓是力的 SI 導出單位。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-02",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "中性原子內，質子數通常等於何者？",
+    "options": [
+      "中子數",
+      "電子數",
+      "質量數",
+      "能階數"
+    ],
+    "correctIndex": 1,
+    "explanation": "中性原子的總正電荷與負電荷相等。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-03",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "DNA 雙股螺旋結構中，腺嘌呤（A）通常與哪種鹼基配對？",
+    "options": [
+      "鳥嘌呤",
+      "胞嘧啶",
+      "胸腺嘧啶",
+      "尿嘧啶"
+    ],
+    "correctIndex": 2,
+    "explanation": "DNA 中 A 通常與 T 配對。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-04",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "物體動能的公式為何？",
+    "options": [
+      "mv",
+      "mgh",
+      "mv²",
+      "½mv²"
+    ],
+    "correctIndex": 3,
+    "explanation": "非相對論情況下平動動能為 ½mv²。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-05",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "理想氣體方程式是哪一個？",
+    "options": [
+      "PV = nRT",
+      "F = ma",
+      "E = mc²",
+      "V = IR"
+    ],
+    "correctIndex": 0,
+    "explanation": "理想氣體滿足壓力、體積、莫耳數與溫度的關係式 PV=nRT。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-06",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "細胞有氧呼吸主要在哪個胞器進行？",
+    "options": [
+      "高基氏體",
+      "粒線體",
+      "核糖體",
+      "液泡"
+    ],
+    "correctIndex": 1,
+    "explanation": "真核細胞的有氧呼吸主要在粒線體進行。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-07",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "恆星光譜的紅移通常表示光源相對觀察者呈現何種徑向運動？",
+    "options": [
+      "靠近",
+      "完全靜止",
+      "遠離",
+      "繞自身旋轉"
+    ],
+    "correctIndex": 2,
+    "explanation": "都卜勒紅移通常對應光源相對遠離；宇宙學紅移也與空間膨脹有關。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-08",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "金屬導線在溫度不變且遵守歐姆定律時，電壓與電流的關係為何？",
+    "options": [
+      "反比",
+      "無關",
+      "平方關係",
+      "正比"
+    ],
+    "correctIndex": 3,
+    "explanation": "歐姆定律 V=IR，在電阻固定時電壓與電流成正比。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-09",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "下列哪個是酸鹼度 pH 低於 7 的水溶液常見性質？",
+    "options": [
+      "酸性",
+      "鹼性",
+      "一定中性",
+      "一定無離子"
+    ],
+    "correctIndex": 0,
+    "explanation": "在 25°C 的一般水溶液中 pH 低於 7 為酸性。",
+    "enabled": true
+  },
+  {
+    "id": "sci-m-10",
+    "category": "science",
+    "difficulty": "medium",
+    "question": "人類體細胞通常有多少條染色體？",
+    "options": [
+      "23",
+      "46",
+      "44",
+      "48"
+    ],
+    "correctIndex": 1,
+    "explanation": "一般人類體細胞有 23 對、共 46 條染色體。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-01",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "光電效應中，電子最大動能主要取決於入射光的什麼特性？",
+    "options": [
+      "光束直徑",
+      "照射時間",
+      "頻率",
+      "偏振方向"
+    ],
+    "correctIndex": 2,
+    "explanation": "最大動能 Kmax=hf−φ，取決於光子頻率和材料功函數。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-02",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "在均勻磁場中，帶電粒子速度與磁場平行時，其磁力大小為何？",
+    "options": [
+      "qvB",
+      "2qvB",
+      "qB/v",
+      "0"
+    ],
+    "correctIndex": 3,
+    "explanation": "洛侖茲磁力大小為 電荷量絕對值乘以 vB sinθ，平行時 θ=0。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-03",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "在熱力學中，封閉系統的熵可以因何種過程增加？",
+    "options": [
+      "不可逆過程",
+      "任意可逆循環",
+      "只有質量輸入",
+      "所有等溫過程都必然減少"
+    ],
+    "correctIndex": 0,
+    "explanation": "不可逆過程會產生熵；封閉系統即使無物質交換也可有熵產生。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-04",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "波函數 ψ 的模平方 在量子力學中通常表示什麼？",
+    "options": [
+      "粒子的電荷值",
+      "機率密度",
+      "能量本徵值",
+      "軌道半徑"
+    ],
+    "correctIndex": 1,
+    "explanation": "Born 詮釋將波函數模平方 視為位置測量的機率密度。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-05",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "半導體在熱平衡條件下，非簡併近似的質量作用定律為何？",
+    "options": [
+      "n+p=ni",
+      "n−p=0",
+      "np=ni²",
+      "np=Eg"
+    ],
+    "correctIndex": 2,
+    "explanation": "熱平衡時電子與電洞濃度的乘積等於本質載子濃度平方。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-06",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "傅立葉定律中，熱流密度與溫度梯度的關係為何？",
+    "options": [
+      "同方向且與梯度正比",
+      "與梯度平方成正比",
+      "與絕對溫度無關",
+      "方向與溫度梯度相反"
+    ],
+    "correctIndex": 3,
+    "explanation": "傅立葉導熱定律 q=−k∇T。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-07",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "理想的可逆卡諾熱機效率取決於什麼？",
+    "options": [
+      "高低溫熱庫的絕對溫度",
+      "工作物質顏色",
+      "活塞表面積",
+      "循環執行速度"
+    ],
+    "correctIndex": 0,
+    "explanation": "卡諾效率 η=1−Tc/Th，使用絕對溫度。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-08",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "德布羅意關係式將波長 λ 與哪個物理量連結？",
+    "options": [
+      "電荷",
+      "動量",
+      "體積",
+      "溫度"
+    ],
+    "correctIndex": 1,
+    "explanation": "德布羅意波長 λ=h/p。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-09",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "在相同溫度下，理想氣體分子平均平動動能與什麼成正比？",
+    "options": [
+      "摩爾質量",
+      "壓力平方",
+      "絕對溫度",
+      "容器體積平方"
+    ],
+    "correctIndex": 2,
+    "explanation": "每分子平均平動動能為 3kBT/2。",
+    "enabled": true
+  },
+  {
+    "id": "sci-h-10",
+    "category": "science",
+    "difficulty": "hard",
+    "question": "馬克士威方程組中的 ∇·B=0 表示什麼？",
+    "options": [
+      "電場一定為零",
+      "磁通量隨時間不變",
+      "磁場只能沿直線",
+      "磁場沒有單獨的磁荷源"
+    ],
+    "correctIndex": 3,
+    "explanation": "磁場高斯定律表示沒有被觀察到的磁單極源。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-01",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "中華民國國父孫中山於哪一年逝世？",
+    "options": [
+      "1925 年",
+      "1911 年",
+      "1945 年",
+      "1975 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "孫中山於 1925 年逝世。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-02",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "古埃及文明主要沿哪條河流發展？",
+    "options": [
+      "亞馬遜河",
+      "尼羅河",
+      "萊茵河",
+      "多瑙河"
+    ],
+    "correctIndex": 1,
+    "explanation": "尼羅河的定期氾濫支撐了古埃及農業。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-03",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "中國秦朝統一六國的年份一般記為哪一年？",
+    "options": [
+      "公元前 476 年",
+      "公元 220 年",
+      "公元前 221 年",
+      "公元 618 年"
+    ],
+    "correctIndex": 2,
+    "explanation": "秦王嬴政於公元前 221 年完成六國統一。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-04",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "第二次世界大戰在歐洲通常以哪一年結束？",
+    "options": [
+      "1939 年",
+      "1941 年",
+      "1944 年",
+      "1945 年"
+    ],
+    "correctIndex": 3,
+    "explanation": "納粹德國於 1945 年投降，歐洲戰事結束。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-05",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "古羅馬城市龐貝主要因哪座火山噴發而被掩埋？",
+    "options": [
+      "維蘇威火山",
+      "富士山",
+      "埃特納火山",
+      "聖海倫火山"
+    ],
+    "correctIndex": 0,
+    "explanation": "公元 79 年維蘇威火山噴發掩埋龐貝。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-06",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "印刷術發展史上，與歐洲活字印刷普及密切相關的人物是？",
+    "options": [
+      "牛頓",
+      "古騰堡",
+      "達爾文",
+      "哥白尼"
+    ],
+    "correctIndex": 1,
+    "explanation": "古騰堡在 15 世紀改進歐洲活字印刷技術。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-07",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "法國大革命一般以哪一年開始？",
+    "options": [
+      "1648 年",
+      "1776 年",
+      "1789 年",
+      "1914 年"
+    ],
+    "correctIndex": 2,
+    "explanation": "1789 年爆發的法國大革命改變了歐洲政治。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-08",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "美國《獨立宣言》於哪一年發布？",
+    "options": [
+      "1492 年",
+      "1607 年",
+      "1865 年",
+      "1776 年"
+    ],
+    "correctIndex": 3,
+    "explanation": "十三殖民地於 1776 年發布《獨立宣言》。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-09",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "中國唐朝的首都長安大致位於今日哪座城市？",
+    "options": [
+      "西安",
+      "杭州",
+      "南京",
+      "成都"
+    ],
+    "correctIndex": 0,
+    "explanation": "唐代長安的位置主要在今日西安一帶。",
+    "enabled": true
+  },
+  {
+    "id": "his-e-10",
+    "category": "history",
+    "difficulty": "easy",
+    "question": "文藝復興最早主要興起於歐洲哪個地區？",
+    "options": [
+      "斯堪地那維亞",
+      "義大利城邦",
+      "俄羅斯",
+      "伊比利半島西部"
+    ],
+    "correctIndex": 1,
+    "explanation": "義大利城邦是文藝復興早期的重要中心。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-01",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "《大憲章》（Magna Carta）於哪一年簽署？",
+    "options": [
+      "1066 年",
+      "1492 年",
+      "1215 年",
+      "1688 年"
+    ],
+    "correctIndex": 2,
+    "explanation": "英格蘭國王約翰於 1215 年接受《大憲章》。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-02",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "明治維新開始的年份通常記為哪一年？",
+    "options": [
+      "1603 年",
+      "1853 年",
+      "1912 年",
+      "1868 年"
+    ],
+    "correctIndex": 3,
+    "explanation": "明治維新以 1868 年的政權更替為重要起點。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-03",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "第一次世界大戰開始於哪一年？",
+    "options": [
+      "1914 年",
+      "1905 年",
+      "1929 年",
+      "1939 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "第一次世界大戰於 1914 年爆發。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-04",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "「君士坦丁堡」在 1453 年被哪個帝國攻陷？",
+    "options": [
+      "羅馬帝國",
+      "鄂圖曼帝國",
+      "蒙古帝國",
+      "波斯阿契美尼德帝國"
+    ],
+    "correctIndex": 1,
+    "explanation": "鄂圖曼帝國在 1453 年攻陷君士坦丁堡。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-05",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "中國宋朝最早由誰建立？",
+    "options": [
+      "趙構",
+      "朱元璋",
+      "趙匡胤",
+      "李淵"
+    ],
+    "correctIndex": 2,
+    "explanation": "趙匡胤於 960 年建立北宋。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-06",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "歐洲宗教改革中，馬丁・路德於 1517 年提出的著名文件是？",
+    "options": [
+      "人權宣言",
+      "獨立宣言",
+      "權利法案",
+      "九十五條論綱"
+    ],
+    "correctIndex": 3,
+    "explanation": "1517 年路德提出《九十五條論綱》，成為宗教改革重要事件。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-07",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "臺灣日治時期開始於哪一年？",
+    "options": [
+      "1895 年",
+      "1885 年",
+      "1911 年",
+      "1945 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "《馬關條約》於 1895 年簽訂，臺灣進入日本統治時期。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-08",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "美國南北戰爭於哪一年結束？",
+    "options": [
+      "1776 年",
+      "1865 年",
+      "1918 年",
+      "1945 年"
+    ],
+    "correctIndex": 1,
+    "explanation": "美國南北戰爭於 1865 年結束主要戰事。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-09",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "冷戰時期柏林圍牆於哪一年開始興建？",
+    "options": [
+      "1945 年",
+      "1955 年",
+      "1961 年",
+      "1989 年"
+    ],
+    "correctIndex": 2,
+    "explanation": "東德當局於 1961 年開始興建柏林圍牆。",
+    "enabled": true
+  },
+  {
+    "id": "his-m-10",
+    "category": "history",
+    "difficulty": "medium",
+    "question": "羅塞塔石碑的發現促進了對哪種古代文字的解讀？",
+    "options": [
+      "楔形文字",
+      "拉丁字母",
+      "梵文",
+      "古埃及象形文字"
+    ],
+    "correctIndex": 3,
+    "explanation": "羅塞塔石碑提供對照文字，促進埃及象形文字的破譯。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-01",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "《威斯特伐利亞和約》通常與哪一年相關？",
+    "options": [
+      "1648 年",
+      "1517 年",
+      "1789 年",
+      "1815 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "1648 年多項條約結束三十年戰爭等衝突。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-02",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "羅馬帝國西部皇帝羅慕路斯・奧古斯都被廢黜的年份是？",
+    "options": [
+      "395 年",
+      "476 年",
+      "800 年",
+      "1054 年"
+    ],
+    "correctIndex": 1,
+    "explanation": "476 年常被用作西羅馬帝國終結的傳統標誌。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-03",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "「坦志麥特改革」（Tanzimat）主要發生在哪個帝國？",
+    "options": [
+      "清帝國",
+      "俄羅斯帝國",
+      "鄂圖曼帝國",
+      "阿茲特克帝國"
+    ],
+    "correctIndex": 2,
+    "explanation": "坦志麥特是 19 世紀鄂圖曼帝國的改革運動。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-04",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "《拿破崙法典》最初於哪一年頒布？",
+    "options": [
+      "1789 年",
+      "1799 年",
+      "1815 年",
+      "1804 年"
+    ],
+    "correctIndex": 3,
+    "explanation": "《法國民法典》於 1804 年頒布，常稱拿破崙法典。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-05",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "中國「靖康之變」發生於哪一年？",
+    "options": [
+      "1127 年",
+      "960 年",
+      "1279 年",
+      "1368 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "1127 年金軍攻陷北宋都城汴京，造成靖康之變。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-06",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "「三十年戰爭」主要發生在哪個時段？",
+    "options": [
+      "1492–1522 年",
+      "1618–1648 年",
+      "1701–1714 年",
+      "1914–1945 年"
+    ],
+    "correctIndex": 1,
+    "explanation": "三十年戰爭主要發生於 1618 至 1648 年。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-07",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "《凡爾賽條約》於哪一年簽署？",
+    "options": [
+      "1914 年",
+      "1917 年",
+      "1919 年",
+      "1925 年"
+    ],
+    "correctIndex": 2,
+    "explanation": "1919 年《凡爾賽條約》簽署，是一戰後重要和約。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-08",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "15 世紀末，完成繞過好望角抵達印度航線的葡萄牙航海家是？",
+    "options": [
+      "麥哲倫",
+      "哥倫布",
+      "迪亞士",
+      "達伽馬"
+    ],
+    "correctIndex": 3,
+    "explanation": "達伽馬於 1498 年抵達印度，完成歐洲經好望角航行至印度的航線。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-09",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "臺灣首任民選總統直接選舉於哪一年舉行？",
+    "options": [
+      "1996 年",
+      "1987 年",
+      "2000 年",
+      "2008 年"
+    ],
+    "correctIndex": 0,
+    "explanation": "1996 年舉行中華民國首次總統直接民選。",
+    "enabled": true
+  },
+  {
+    "id": "his-h-10",
+    "category": "history",
+    "difficulty": "hard",
+    "question": "俄國十月革命按當時俄國使用的儒略曆發生於哪個月份？",
+    "options": [
+      "十一月",
+      "十月",
+      "三月",
+      "一月"
+    ],
+    "correctIndex": 1,
+    "explanation": "依儒略曆發生於 1917 年 10 月，依現行公曆則在 11 月。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-01",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "日本的首都是哪座城市？",
+    "options": [
+      "大阪",
+      "京都",
+      "東京",
+      "名古屋"
+    ],
+    "correctIndex": 2,
+    "explanation": "東京是日本首都。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-02",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "埃及主要位於哪一洲？",
+    "options": [
+      "歐洲",
+      "南美洲",
+      "大洋洲",
+      "非洲"
+    ],
+    "correctIndex": 3,
+    "explanation": "埃及主要位於非洲東北部，西奈半島位於亞洲。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-03",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "世界上面積最大的海洋是？",
+    "options": [
+      "太平洋",
+      "大西洋",
+      "印度洋",
+      "北冰洋"
+    ],
+    "correctIndex": 0,
+    "explanation": "太平洋是地球面積最大的海洋。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-04",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "臺灣最高峰是哪座山？",
+    "options": [
+      "雪山",
+      "玉山",
+      "合歡山",
+      "陽明山"
+    ],
+    "correctIndex": 1,
+    "explanation": "玉山主峰為臺灣最高峰。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-05",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "澳洲的首都是哪座城市？",
+    "options": [
+      "雪梨",
+      "墨爾本",
+      "坎培拉",
+      "伯斯"
+    ],
+    "correctIndex": 2,
+    "explanation": "澳洲首都是坎培拉，不是雪梨。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-06",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "下列哪個國家位於南美洲？",
+    "options": [
+      "泰國",
+      "肯亞",
+      "瑞典",
+      "智利"
+    ],
+    "correctIndex": 3,
+    "explanation": "智利位於南美洲西部。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-07",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "撒哈拉沙漠主要位於哪一洲？",
+    "options": [
+      "非洲",
+      "亞洲",
+      "歐洲",
+      "南極洲"
+    ],
+    "correctIndex": 0,
+    "explanation": "撒哈拉位於北非。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-08",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "歐洲阿爾卑斯山脈位於哪一洲？",
+    "options": [
+      "北美洲",
+      "歐洲",
+      "亞洲",
+      "非洲"
+    ],
+    "correctIndex": 1,
+    "explanation": "阿爾卑斯山是歐洲重要的山系。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-09",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "加拿大的首都是哪座城市？",
+    "options": [
+      "多倫多",
+      "溫哥華",
+      "渥太華",
+      "蒙特婁"
+    ],
+    "correctIndex": 2,
+    "explanation": "加拿大首都是渥太華。",
+    "enabled": true
+  },
+  {
+    "id": "geo-e-10",
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "地球赤道的緯度是多少？",
+    "options": [
+      "90°N",
+      "45°N",
+      "23.5°S",
+      "0°"
+    ],
+    "correctIndex": 3,
+    "explanation": "赤道定義為緯度零度的地理大圓。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-01",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "臺灣中央山脈主要沿哪個方向延伸？",
+    "options": [
+      "大致南北向",
+      "大致東西向",
+      "西北至東南",
+      "完全環狀"
+    ],
+    "correctIndex": 0,
+    "explanation": "中央山脈大致南北延伸，形成臺灣主要地形骨架。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-02",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "巴拿馬運河連接哪兩大洋的航運系統？",
+    "options": [
+      "印度洋與太平洋",
+      "大西洋與太平洋",
+      "大西洋與北冰洋",
+      "印度洋與北冰洋"
+    ],
+    "correctIndex": 1,
+    "explanation": "巴拿馬運河連接大西洋側的加勒比海與太平洋。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-03",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "非洲面積最大的國家是？",
+    "options": [
+      "剛果民主共和國",
+      "蘇丹",
+      "阿爾及利亞",
+      "利比亞"
+    ],
+    "correctIndex": 2,
+    "explanation": "阿爾及利亞是目前非洲面積最大的國家。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-04",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "印尼的峇里島位於哪座較大的島嶼東邊？",
+    "options": [
+      "蘇門答臘島",
+      "婆羅洲",
+      "蘇拉威西島",
+      "爪哇島"
+    ],
+    "correctIndex": 3,
+    "explanation": "峇里島緊鄰爪哇島東方。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-05",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "下列哪個海峽分隔臺灣本島與中國大陸？",
+    "options": [
+      "臺灣海峽",
+      "麻六甲海峽",
+      "直布羅陀海峽",
+      "英吉利海峽"
+    ],
+    "correctIndex": 0,
+    "explanation": "臺灣海峽位於臺灣島與中國大陸東南沿海之間。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-06",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "世界最大島嶼（不將澳洲視為島嶼）是？",
+    "options": [
+      "馬達加斯加",
+      "格陵蘭",
+      "新幾內亞",
+      "婆羅洲"
+    ],
+    "correctIndex": 1,
+    "explanation": "格陵蘭通常列為世界最大島嶼。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-07",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "地中海與大西洋之間的主要天然通道是？",
+    "options": [
+      "博斯普魯斯海峽",
+      "霍爾木茲海峽",
+      "直布羅陀海峽",
+      "白令海峽"
+    ],
+    "correctIndex": 2,
+    "explanation": "直布羅陀海峽連接地中海與大西洋。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-08",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "珠穆朗瑪峰位於哪條山脈？",
+    "options": [
+      "安地斯山脈",
+      "落磯山脈",
+      "阿爾卑斯山脈",
+      "喜馬拉雅山脈"
+    ],
+    "correctIndex": 3,
+    "explanation": "珠穆朗瑪峰位於喜馬拉雅山脈。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-09",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "下列哪座城市位於北半球？",
+    "options": [
+      "倫敦",
+      "雪梨",
+      "開普敦",
+      "布宜諾斯艾利斯"
+    ],
+    "correctIndex": 0,
+    "explanation": "倫敦位於北緯約 51.5 度。",
+    "enabled": true
+  },
+  {
+    "id": "geo-m-10",
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "紐西蘭南島與北島之間的海峽稱為？",
+    "options": [
+      "德雷克海峽",
+      "庫克海峽",
+      "臺灣海峽",
+      "宗谷海峽"
+    ],
+    "correctIndex": 1,
+    "explanation": "庫克海峽位於紐西蘭南島與北島之間。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-01",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "國際換日線大致沿哪條經線附近延伸？",
+    "options": [
+      "本初子午線",
+      "90°E",
+      "180° 經線",
+      "45°W"
+    ],
+    "correctIndex": 2,
+    "explanation": "國際換日線大致接近 180 度經線，但會因政治與地理因素彎曲。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-02",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "世界最深的海溝一般被認為是哪個？",
+    "options": [
+      "日本海溝",
+      "祕魯－智利海溝",
+      "爪哇海溝",
+      "馬里亞納海溝"
+    ],
+    "correctIndex": 3,
+    "explanation": "馬里亞納海溝的挑戰者深淵是已知海洋最深區域。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-03",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "標準的柯本氣候分類中，字母 B 表示哪一大類氣候？",
+    "options": [
+      "乾燥氣候",
+      "熱帶氣候",
+      "溫帶氣候",
+      "極地氣候"
+    ],
+    "correctIndex": 0,
+    "explanation": "柯本氣候分類 B 代表乾燥氣候。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-04",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "阿塔卡馬沙漠主要位於哪個國家？",
+    "options": [
+      "阿根廷",
+      "智利",
+      "巴西",
+      "厄瓜多"
+    ],
+    "correctIndex": 1,
+    "explanation": "阿塔卡馬沙漠主要位於智利北部。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-05",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "地球自轉使地面上自由運動的空氣受到哪一種表觀偏轉效應？",
+    "options": [
+      "都卜勒效應",
+      "溫室效應",
+      "科氏力效應",
+      "毛細現象"
+    ],
+    "correctIndex": 2,
+    "explanation": "旋轉參考系中的科氏效應使大尺度流動發生偏轉。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-06",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "下列哪個湖泊是非洲面積最大的淡水湖？",
+    "options": [
+      "坦干伊喀湖",
+      "馬拉威湖",
+      "乍得湖",
+      "維多利亞湖"
+    ],
+    "correctIndex": 3,
+    "explanation": "維多利亞湖以表面積計是非洲最大的淡水湖。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-07",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "地理學中的「雨影效應」通常發生在山脈的哪一側？",
+    "options": [
+      "背風坡",
+      "迎風坡",
+      "山頂正中央",
+      "海面以下"
+    ],
+    "correctIndex": 0,
+    "explanation": "潮濕氣流在迎風坡降水後，背風坡可能較乾燥。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-08",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "南美洲安地斯山脈主要沿哪個海岸延伸？",
+    "options": [
+      "東海岸",
+      "西海岸",
+      "北海岸",
+      "南極海岸"
+    ],
+    "correctIndex": 1,
+    "explanation": "安地斯山脈沿南美洲西部延伸。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-09",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "在地圖投影中，麥卡托投影最顯著的高緯度問題是什麼？",
+    "options": [
+      "方向完全不準",
+      "無法標示經線",
+      "面積誇大",
+      "赤道消失"
+    ],
+    "correctIndex": 2,
+    "explanation": "麥卡托投影在高緯度顯著放大面積。",
+    "enabled": true
+  },
+  {
+    "id": "geo-h-10",
+    "category": "geography",
+    "difficulty": "hard",
+    "question": "地中海氣候通常有什麼季節性降水特徵？",
+    "options": [
+      "全年均勻降雨",
+      "夏季濕潤冬季乾燥",
+      "全年幾乎無雨",
+      "夏季乾燥、冬季較多雨"
+    ],
+    "correctIndex": 3,
+    "explanation": "典型地中海氣候具有乾夏與相對濕潤的冬季。",
+    "enabled": true
+  }
+]
