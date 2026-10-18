@@ -1,5 +1,6 @@
 /** Express HTTP adapter; business rules live in game-service.mjs. */
 import express from 'express';
+import { fileURLToPath } from 'node:url';
 import { ApiError } from './game-service.mjs';
 
 export function createApp(service) {
@@ -15,6 +16,11 @@ export function createApp(service) {
   app.post('/api/games/:id/answers', (req, res) => res.json(service.answer(req.params.id, req.body)));
   app.delete('/api/games/:id', (req, res) => { service.delete(req.params.id); res.status(204).end(); });
   app.post('/api/games/:id/next', (req, res) => res.json(service.next(req.params.id)));
+  // Only approved frontend assets are served. Never expose public/data/questions.json:
+  // it contains correctIndex and would bypass the server-side answer boundary.
+  app.get('/', (_req, res) => res.sendFile(fileURLToPath(new URL('../public/index.html', import.meta.url))));
+  app.use('/css', express.static(fileURLToPath(new URL('../public/css/', import.meta.url)), { index: false }));
+  app.use('/js', express.static(fileURLToPath(new URL('../public/js/', import.meta.url)), { index: false }));
   app.use('/api', (_req, _res, next) => next(new ApiError(404, 'ROUTE_NOT_FOUND', 'API 路徑不存在。')));
   app.use((error, _req, res, _next) => {
     if (error instanceof ApiError) return res.status(error.status).json({ error: { code: error.code, message: error.message } });

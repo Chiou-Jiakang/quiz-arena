@@ -1,47 +1,18 @@
-import { drawQuestions, validateQuestionBank } from './quiz-data.mjs';
-import { createGame, submitAnswer, submitTimeout, advanceGame, summarizeGame } from './quiz-engine.mjs';
-import { createQuestionTimer, QUESTION_SECONDS } from './quiz-timer.mjs';
+import { createApiClient } from './api-client.mjs';
+import { createQuestionTimer } from './quiz-timer.mjs';
 
+const api = createApiClient();
 const $ = selector => document.querySelector(selector);
 const views = { home: $('#home-view'), setup: $('#setup-view'), play: $('#play-view'), result: $('#result-view') };
 const form = $('#setup-form');
 const message = $('#form-message');
-const bankUrl = new URL('../data/questions.json', import.meta.url);
-let bankPromise;
+const STORAGE_KEY = 'quiz-arena-active-game-v0.6';
+const categoryNames = { mixed:'綜合知識', technology:'科技', science:'科學', history:'歷史', geography:'地理' };
+const difficultyNames = { easy:'簡單', medium:'中等', hard:'困難' };
 let game = null;
 let timer = null;
-// Generation guards prevent an old async fetch/retry from reviving an abandoned game.
-let gameGeneration = 0;
-
-function stopTimer() {
-  if (timer) { timer.stop(); timer = null; }
-}
-
-function paintTimer(seconds, ratio) {
-  $('#timer-seconds').textContent = `${seconds} 秒`;
-  $('#timer-seconds').setAttribute('aria-label', `剩餘 ${seconds} 秒`);
-  $('#timer-progress-bar').style.width = `${Math.max(0, Math.min(1, ratio)) * 100}%`;
-  $('#timer-progress').setAttribute('aria-valuenow', String(Math.round(Math.max(0, Math.min(1, ratio)) * 100)));
-  $('#quiz-timer').classList.toggle('is-urgent', seconds <= 5);
-  if (seconds === 10 || seconds === 5 || seconds === 0) $('#timer-announcement').textContent = `剩餘 ${seconds} 秒`;
-}
-
-function beginTimer() {
-  stopTimer();
-  $('#timer-announcement').textContent = '';
-  $('#quiz-timer').classList.remove('is-frozen');
-  timer = createQuestionTimer({
-    seconds: QUESTION_SECONDS,
-    onTick: paintTimer,
-    onExpire: () => chooseTimeout()
-  });
-  timer.start();
-}
-
-function freezeTimer() {
-  stopTimer();
-  $('#quiz-timer').classList.add('is-frozen');
-}
+let generation = 0;
+let busy = false;
 
 $('#current-year').textContent = String(new Date().getFullYear());
 
@@ -54,157 +25,191 @@ function showView(name) {
   window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
-function goHome() {
-  gameGeneration++;
+function stopTimer() { if (timer) { timer.stop(); timer = null; } }
+function paintTimer(seconds, ratio) {
+  const bounded = Math.max(0, Math.min(1, ratio));
+  $('#timer-seconds').textContent = `${seconds} 秒`;
+  $('#timer-seconds').setAttribute('aria-label', `剩餘 ${seconds} 秒`);
+  $('#timer-progress-bar').style.width = `${bounded * 100}%`;
+  $('#timer-progress').setAttribute('aria-valuenow', String(Math.round(bounded * 100)));
+  $('#quiz-timer').classList.toggle('is-urgent', seconds <= 5);
+  if ([10,5,0].includes(seconds)) $('#timer-announcement').textContent = `剩餘 ${seconds} 秒`;
+}
+
+function startClock(snapshot) {
+  stopTimer();
+  $('#quiz-timer').classList.remove('is-frozen');
+  $('#timer-announcement').textContent = '';
+  // Anchor at the time the response arrives; server is always authoritative on deadline.
+  // This cannot grant extra time: late submissions are rejected by the API.
+  const leftMs = Math.max(0, snapshot.deadlineAt - snapshot.serverNow);
+  if (leftMs <= 0) { paintTimer(0, 0); setTimeout(() => { void synchronize(); }, 0); return; }
+  timer = createQuestionTimer({
+    seconds: leftMs / 1000,
+    onTick: (seconds, ratio) => paintTimer(seconds, ratio),
+    onExpire: () => { paintTimer(0,0); void synchronize(); }
+  });
+  timer.start();
+}
+
+function clearGame() {
+  generation++;
   stopTimer();
   game = null;
-  message.textContent = '';
-  showView('home');
+  busy = false;
+  sessionStorage.removeItem(STORAGE_KEY);
 }
-
+function goHome() { clearGame(); message.textContent = ''; showView('home'); }
 $('#start-btn').addEventListener('click', () => { showView('setup'); $('#nickname').focus(); });
 $('#back-btn').addEventListener('click', goHome);
-$('#brand-link').addEventListener('click', event => { event.preventDefault(); if (game && !window.confirm('確定離開目前的挑戰嗎？進度不會儲存。')) return; goHome(); });
-$('#quit-btn').addEventListener('click', () => { if (window.confirm('確定結束挑戰嗎？本次進度不會儲存。')) goHome(); });
+$('#brand-link').addEventListener('click', event => {
+  event.preventDefault();
+  if (game && game.phase !== 'finished' && !window.confirm('確定離開挑戰嗎？場次可保留於伺服器，但此瀏覽器將不再自動恢復。')) return;
+  goHome();
+});
+$('#quit-btn').addEventListener('click', () => {
+  if (window.confirm('確定離開目前的挑戰嗎？')) goHome();
+});
 $('#result-home-btn').addEventListener('click', goHome);
 
-async function loadBank() {
-  // Cache only successful loads: a network failure should remain retryable.
-  if (!bankPromise) {
-    bankPromise = fetch(bankUrl).then(response => {
-      if (!response.ok) throw new Error(`載入題庫失敗（HTTP ${response.status}）`);
-      return response.json();
-    }).then(data => { validateQuestionBank(data); return data; }).catch(error => {
-      bankPromise = null;
-      throw error;
-    });
-  }
-  return bankPromise;
+function errorText(error) { return error instanceof Error ? error.message : '未知連線錯誤'; }
+function notifyError(error) {
+  $('#answer-feedback').hidden = false;
+  $('#answer-feedback-title').textContent = `同步失敗：${errorText(error)}`;
+  $('#answer-explanation').textContent = '請按「重新同步」恢復當前場次，不會重複送出答案。';
+  $('#next-btn').textContent = '重新同步 ↻';
+  $('#next-btn').hidden = false;
+  $('#next-btn').dataset.action = 'sync';
 }
 
-const settings = () => ({
-  player: $('#nickname').value.trim(),
-  category: $('#category').value,
-  difficulty: $('#difficulty').value
-});
-
-const categoryLabel = () => $('#category').selectedOptions[0].textContent;
-const difficultyLabel = () => $('#difficulty').selectedOptions[0].textContent;
-
-async function startGame({player, category, difficulty}) {
-  const generation = ++gameGeneration;
+function paintSnapshot(snapshot) {
+  if (!snapshot || !['answering','feedback','finished'].includes(snapshot.phase)) throw new Error('伺服器傳回未知遊戲狀態');
   stopTimer();
-  const button = form.querySelector('button[type="submit"]');
-  if (button.disabled) return;
-  button.disabled = true;
-  message.textContent = '正在載入題庫…';
-  try {
-    const bank = await loadBank();
-    if (generation !== gameGeneration) return;
-    const selected = drawQuestions(bank, { category, difficulty });
-    game = createGame(selected, player, category, difficulty);
-    message.textContent = '';
-    showView('play');
-    renderQuestion();
-  } catch (error) {
-    if (generation === gameGeneration) message.textContent = `無法開始：${error instanceof Error ? error.message : '未知錯誤'}。請稍後重試。`;
-  } finally {
-    button.disabled = false;
-  }
-}
-
-form.addEventListener('submit', event => {
-  event.preventDefault();
-  if (!form.reportValidity()) return;
-  const config = settings();
-  if (!config.player || [...config.player].length > 20) {
-    message.textContent = '請輸入 1–20 個字元的暱稱。';
-    return;
-  }
-  void startGame(config);
-});
-
-function renderQuestion() {
-  if (!game || game.phase !== 'answering') return;
-  const question = game.questions[game.index];
-  $('#play-player').textContent = `${game.player} · ${categoryLabel()}`;
-  $('#play-score').textContent = `${game.score} 分`;
-  $('#play-progress-text').textContent = `第 ${game.index + 1} / ${game.questions.length} 題`;
-  $('#play-category').textContent = difficultyLabel();
-  $('#play-difficulty').textContent = `QUESTION ${String(game.index + 1).padStart(2, '0')}`;
-  $('#play-title').textContent = question.question;
-  $('#play-progress').setAttribute('aria-valuenow', String(game.answers.length));
-  $('#play-progress-bar').style.width = `${game.answers.length / game.questions.length * 100}%`;
+  game = snapshot;
+  sessionStorage.setItem(STORAGE_KEY, snapshot.id);
+  if (snapshot.phase === 'finished') { renderResults(snapshot.result); return; }
+  showView('play');
+  $('#play-player').textContent = `${snapshot.player} · ${categoryNames[snapshot.category] ?? snapshot.category}`;
+  $('#play-score').textContent = `${snapshot.score} 分`;
+  $('#play-progress-text').textContent = `第 ${snapshot.number} / ${snapshot.total} 題`;
+  $('#play-category').textContent = difficultyNames[snapshot.difficulty] ?? snapshot.difficulty;
+  $('#play-difficulty').textContent = `QUESTION ${String(snapshot.number).padStart(2,'0')}`;
+  $('#play-title').textContent = snapshot.question.question;
+  $('#play-progress').setAttribute('aria-valuenow', String(snapshot.answeredCount));
+  $('#play-progress-bar').style.width = `${snapshot.answeredCount / snapshot.total * 100}%`;
   const options = $('#answer-options');
   options.replaceChildren();
-  question.options.forEach((value, index) => {
+  snapshot.question.options.forEach((optionText, index) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'answer-option';
+    button.disabled = snapshot.phase !== 'answering';
     const letter = document.createElement('span');
     letter.className = 'option-letter';
     letter.textContent = `${'ABCD'[index]}.`;
-    const label = document.createElement('span');
-    label.textContent = value;
-    button.append(letter, label);
-    button.addEventListener('click', () => chooseAnswer(index));
+    const text = document.createElement('span');
+    text.textContent = optionText;
+    button.append(letter, text);
+    button.addEventListener('click', () => { void chooseAnswer(index); });
     options.append(button);
   });
   $('#answer-feedback').hidden = true;
   $('#next-btn').hidden = true;
-  $('#play-title').focus();
-  beginTimer();
-}
-
-function chooseAnswer(index) {
-  if (!game || game.phase !== 'answering') return;
-  // Even if an interval callback was delayed, a click after the deadline is a timeout.
-  if (!timer || timer.isExpired()) { chooseTimeout(); return; }
-  freezeTimer();
-  game = submitAnswer(game, index);
-  showFeedback(index, false);
-}
-
-function chooseTimeout() {
-  if (!game || game.phase !== 'answering') return;
-  freezeTimer();
-  paintTimer(0, 0);
-  game = submitTimeout(game);
-  showFeedback(null, true);
-}
-
-function showFeedback(index, timedOut) {
-  const q = game.questions[game.index];
-  for (const [i, option] of [...$('#answer-options').children].entries()) {
-    option.disabled = true;
-    if (i === q.correctIndex) option.classList.add('is-correct');
-    else if (i === index) option.classList.add('is-wrong');
+  $('#next-btn').dataset.action = 'next';
+  if (snapshot.phase === 'answering') {
+    $('#play-title').focus();
+    startClock(snapshot);
+  } else {
+    paintTimer(0,0);
+    $('#quiz-timer').classList.add('is-frozen');
+    const f = snapshot.feedback;
+    for (const [index, option] of [...options.children].entries()) {
+      if (index === f.correctIndex) option.classList.add('is-correct');
+      else if (index === f.chosenIndex) option.classList.add('is-wrong');
+    }
+    $('#answer-feedback-title').textContent = f.timedOut
+      ? `⌛ 時間到！本題 0 分。正確答案：${snapshot.question.options[f.correctIndex]}`
+      : f.correct ? '✓ 回答正確！+100 分' : `✕ 回答錯誤。正確答案：${snapshot.question.options[f.correctIndex]}`;
+    $('#answer-explanation').textContent = f.explanation;
+    $('#answer-feedback').hidden = false;
+    $('#next-btn').hidden = false;
+    $('#next-btn').textContent = snapshot.answeredCount === snapshot.total ? '查看結算結果 →' : '下一題 →';
+    $('#next-btn').focus();
   }
-  const correct = !timedOut && index === q.correctIndex;
-  $('#answer-feedback-title').textContent = timedOut
-    ? `⌛ 時間到！本題 0 分。正確答案：${q.options[q.correctIndex]}`
-    : correct ? '✓ 回答正確！+100 分' : `✕ 回答錯誤。正確答案：${q.options[q.correctIndex]}`;
-  $('#answer-explanation').textContent = q.explanation;
-  $('#answer-feedback').hidden = false;
-  $('#next-btn').hidden = false;
-  $('#next-btn').textContent = game.answers.length === game.questions.length ? '查看結算結果 →' : '下一題 →';
-  $('#play-score').textContent = `${game.score} 分`;
-  $('#play-progress').setAttribute('aria-valuenow', String(game.answers.length));
-  $('#play-progress-bar').style.width = `${game.answers.length / game.questions.length * 100}%`;
-  $('#next-btn').focus();
 }
 
+async function updateFromServer(operation, ticket = generation) {
+  if (busy) return;
+  busy = true;
+  try {
+    const snapshot = await operation();
+    if (ticket !== generation) return;
+    paintSnapshot(snapshot);
+  } catch (error) {
+    if (ticket === generation) {
+      stopTimer();
+      if (game) notifyError(error);
+      else message.textContent = `無法開始：${errorText(error)}`;
+    }
+  } finally {
+    busy = false;
+  }
+}
+
+async function synchronize() {
+  if (!game || busy) return;
+  const ticket = generation;
+  stopTimer();
+  // Read-only synchronization resolves late answers and timeouts without double submissions.
+  await updateFromServer(() => api.readGame(game.id), ticket);
+}
+
+async function chooseAnswer(index) {
+  if (!game || game.phase !== 'answering' || busy) return;
+  stopTimer();
+  const id = game.id;
+  const ticket = generation;
+  $('#answer-options').querySelectorAll('button').forEach(button => { button.disabled = true; });
+  busy = true;
+  try {
+    const snapshot = await api.answer(id, index);
+    if (ticket === generation) paintSnapshot(snapshot);
+  } catch (error) {
+    if (ticket !== generation) return;
+    // Deadline races or ambiguous network failures must be resolved with GET, not a retry POST.
+    try { const latest = await api.readGame(id); if (ticket === generation) paintSnapshot(latest); }
+    catch (syncError) { notifyError(syncError); }
+  } finally { busy = false; }
+}
+
+const settings = () => ({player: $('#nickname').value.trim(), category: $('#category').value, difficulty: $('#difficulty').value});
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (!form.reportValidity() || busy) return;
+  const config = settings();
+  if (!config.player || [...config.player].length > 20) { message.textContent = '請輸入 1–20 個字元的暱稱。'; return; }
+  clearGame();
+  message.textContent = '正在向伺服器建立遊戲…';
+  void updateFromServer(() => api.createGame(config));
+});
 $('#next-btn').addEventListener('click', () => {
-  if (!game || game.phase !== 'feedback') return;
-  game = advanceGame(game);
-  if (game.phase === 'finished') renderResults();
-  else renderQuestion();
+  if (busy || !game) return;
+  if ($('#next-btn').dataset.action === 'sync') { void synchronize(); return; }
+  if (game.phase !== 'feedback') return;
+  const id = game.id;
+  void updateFromServer(() => api.next(id));
+});
+$('#retry-btn').addEventListener('click', () => {
+  if (!game || game.phase !== 'finished' || busy) return;
+  const config = {player: game.player, category: game.category, difficulty: game.difficulty};
+  clearGame();
+  showView('setup');
+  message.textContent = '正在建立新的挑戰…';
+  void updateFromServer(() => api.createGame(config));
 });
 
-function renderResults() {
-  stopTimer();
-  const result = summarizeGame(game);
-  $('#result-player').textContent = `${result.player}，你完成了本次挑戰。`;
+function renderResults(result) {
+  $('#result-player').textContent = `${game.player}，你完成了本次挑戰。成績已保存在伺服器 SQLite。`;
   $('#result-score').replaceChildren(document.createTextNode(`${result.score} `));
   const small = document.createElement('small');
   small.textContent = `/ ${result.total * 100} 分`;
@@ -213,29 +218,26 @@ function renderResults() {
   $('#result-accuracy').textContent = `${result.accuracy}%`;
   const list = $('#review-list');
   list.replaceChildren();
-  result.review.forEach((item, index) => {
+  result.review.forEach((item,index) => {
     const li = document.createElement('li');
     const status = document.createElement('p');
     status.className = 'review-label';
-    status.textContent = `第 ${index + 1} 題 · ${item.timedOut ? '逾時' : item.correct ? '答對' : '答錯'}`;
-    const title = document.createElement('strong');
-    title.textContent = item.question;
-    const chosen = document.createElement('p');
-    chosen.textContent = `你的答案：${item.timedOut ? '未作答（時間到）' : item.options[item.chosenIndex]}`;
-    const correct = document.createElement('p');
-    correct.textContent = `正確答案：${item.options[item.correctIndex]}`;
-    const explanation = document.createElement('p');
-    explanation.textContent = `解析：${item.explanation}`;
-    li.append(status, title, chosen, correct, explanation);
+    status.textContent = `第 ${index+1} 題 · ${item.timedOut?'逾時':item.correct?'答對':'答錯'}`;
+    const title = document.createElement('strong'); title.textContent = item.question;
+    const chosen = document.createElement('p'); chosen.textContent = `你的答案：${item.timedOut?'未作答（時間到）':item.options[item.chosenIndex]}`;
+    const correct = document.createElement('p'); correct.textContent = `正確答案：${item.options[item.correctIndex]}`;
+    const explanation = document.createElement('p'); explanation.textContent = `解析：${item.explanation}`;
+    li.append(status,title,chosen,correct,explanation);
     list.append(li);
   });
+  sessionStorage.removeItem(STORAGE_KEY);
   showView('result');
-  $('#result-title').focus?.();
 }
 
-document.addEventListener('visibilitychange', () => { if (!document.hidden) timer?.tick(); });
+// Restores sessions after reload; server decides whether the 20-second deadline has passed.
+const saved = sessionStorage.getItem(STORAGE_KEY);
+if (saved) {
+  void updateFromServer(() => api.readGame(saved));
+}
 
-$('#retry-btn').addEventListener('click', () => {
-  if (!game || game.phase !== 'finished') return;
-  void startGame({ player: game.player, category: game.category, difficulty: game.difficulty });
-});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && game?.phase === 'answering') void synchronize(); });

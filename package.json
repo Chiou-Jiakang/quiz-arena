@@ -1,6 +1,6 @@
 {
   "name": "quiz-arena",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "Quiz Arena MVP — frontend quiz and SQLite-backed Express API",

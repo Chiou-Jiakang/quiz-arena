@@ -18,7 +18,7 @@
         <span class="brand__symbol" aria-hidden="true">✦</span>
         <span>QUIZ<span class="brand__accent">ARENA</span></span>
       </a>
-      <span class="version">FRONTEND PREVIEW <span>v0.3.0 Timer System</span></span>
+      <span class="version">FULL-STACK PREVIEW <span>v0.6.0 API + SQLite</span></span>
     </header>
 
     <main id="main-content">
@@ -63,7 +63,7 @@
         <form id="setup-form" class="setup-card">
           <label for="nickname">玩家暱稱 <span class="required">*</span></label>
           <input id="nickname" name="nickname" type="text" maxlength="20" placeholder="請輸入 1–20 個字元的暱稱" autocomplete="nickname" required>
-          <span class="field-hint">暱稱只儲存在本次瀏覽器介面，尚未連接資料庫。</span>
+          <span class="field-hint">暱稱會送至本機 Express 伺服器；完成場次的成績儲存於 SQLite。</span>
           <label for="category">知識類別</label>
           <select id="category" name="category"><option value="mixed">綜合知識</option><option value="technology">科技</option><option value="science">科學</option><option value="history">歷史</option><option value="geography">地理</option></select>
           <label for="difficulty">難度</label>
@@ -93,7 +93,7 @@
           </div>
           <button type="button" class="btn btn--primary btn--full next-btn" id="next-btn" hidden>下一題 →</button>
         </article>
-        <p class="prototype-notice">前端練習版：每題 20 秒倒數已啟用；目前仍由前端計時與判分，尚無後端防作弊驗證，分數不會儲存。</p>
+        <p class="prototype-notice">v0.6.0 全端練習版：由 Express 判題、計時並寫入 SQLite；請透過 http://127.0.0.1:3000/ 遊玩。尚未提供登入與正式部署安全防護。</p>
       </section>
 
       <section class="view result-view" id="result-view" aria-labelledby="result-title" hidden>
