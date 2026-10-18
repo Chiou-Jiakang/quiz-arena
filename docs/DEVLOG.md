@@ -428,6 +428,48 @@ npm start
 - 目前是可操作的本機全端原型，未建立正式的排行榜、部署資安與存取控制；題庫檔仍保留於 Git 及公開 Repository 歷史，不能宣稱已完成正式防作弊。
 - 下階段進入 v0.7.0：排行榜、歷史成績 UI、錯誤處理及可及性改善、測試擴充；之後 v1.0.0 執行 MVP 驗收與發布準備。
 
+## 2026-10-19｜Session 09：v0.7.0 排行榜、歷史成績回顧與第十六筆功能 Commit
+
+### 一、開發動機與基線
+- v0.6.0 已將瀏覽器答題、Express API 與 SQLite 完成場次保存串接，但玩家尚未有統一入口查看歷史紀錄及排名。
+- 以前一筆文件 Commit [`9aae4a7`](https://github.com/Chiou-Jiakang/quiz-arena/commit/9aae4a7) 的程式基線規劃增量修改，保留十題問答、20 秒截止時間、後端判題、SQLite 持久化和場次恢復行為。
+- v0.7.0 本期目標為可在本機操作的排行榜、最近歷史成績和逐題回顧；不將會員認證、正式反作弊或公開部署誤列為已完成。
+
+### 二、程式修改與架構責任
+- `public/index.html`：首頁增設排行榜與歷史成績入口、顯示容器和返回導覽；原首頁、設定、問答、結算功能保留。
+- `public/css/style.css`：補充排行榜與歷史紀錄的排版，延續既有深色視覺及響應式布局。
+- `public/js/app.js`：串接排行榜畫面與原遊戲檢視切換。
+- `public/js/api-client.mjs`：新增 `GET /api/leaderboard` 的請求封裝，不讓 UI 直接拼寫 HTTP 邏輯。
+- `public/js/scores-view.mjs`：管理排行榜與歷史成績載入、空資料訊息、錯誤訊息、單場回顧及回到首頁；不可信資料經由 `textContent` 呈現。
+- `server/app.mjs`：新增排行榜讀取路由；保留原有 `/api/games`、`/api/scores` 等路由與錯誤契約。
+- `server/game-service.mjs`：新增排行榜服務介面、限制 `limit` 的輸入範圍，保持 HTTP 層與商業邏輯分離。
+- `server/memory-store.mjs` 與 `server/sqlite-store.mjs`：實作相同的排名查詢能力；SQLite 從結果表全量排序後套用 LIMIT，不使用「最近 100 筆」代替最高分排行榜。
+- `docs/LEADERBOARD_DESIGN.md`：定義排序、顯示範圍、資料安全、API 回應與驗收條件。
+- `tests/leaderboard.test.mjs`、`tests/leaderboard-http.test.mjs`：覆蓋 SQLite／記憶體排名及 HTTP 空清單、無效 limit；沒有新增或調整 Schema 版本。
+
+### 三、排名規則與資料語意
+- **排行榜前十名：** 先依分數遞減，其次依正確率遞減，若仍相同以完成時間較早者優先，最後以場次 ID 字典序作穩定排序。
+- **最近 20 筆成績：** 依完成時間由新到舊，與最高分排行榜分開呈現；逐題細節透過 `/api/scores/:id` 查詢。
+- 僅有完成遊戲的資料進入 `results` 成績表；未完成場次不參加排名。
+- 排名以「每一場已完成挑戰」為單位，**並非**每位唯一玩家、每個暱稱去重或任何有認證的競技帳號。
+
+### 四、測試與驗收證據
+- 既有回歸測試 60 項；新增排行榜測試 3 項（記憶體排序、SQLite 排序、HTTP 合約），預期總數 **63 項**。
+- 使用者已回報最新版操作正常；所提供 Git 畫面證實 12 個功能及測試檔被追蹤、暫存 `git diff --cached --check` 沒有顯示格式錯誤，且 GitHub 推送完成。
+- **證據界線：** 對話中的 `npm test` 截圖未完整顯示 v0.7.0 的 `tests 63`、`pass 63`、`fail 0` 摘要，故此處不宣稱已獨立核實 63/63；後續以完整本機測試日誌為準。
+- 人工驗收與單元／HTTP 測試不等於完整跨裝置、資料庫壓力或公開安全審查。
+
+### 五、GitHub 提交紀錄
+- 第十六筆功能 Commit：[`09e06da`](https://github.com/Chiou-Jiakang/quiz-arena/commit/09e06da) — `feat: implement leaderboard and score history UI`。
+- PowerShell 顯示 `9aae4a7..09e06da main -> main`，`git log` 顯示 `HEAD -> main` 與 `origin/main` 指向 `09e06da`；確定功能版本已成功上傳。
+- `STAGE2_README.txt` 與 `data/` 持續為未追蹤項目；`data/` 可能包含真實 SQLite 資料，不得以 `git add .` 直接提交，也不可未確認即刪除。
+- README、CHANGELOG、DEVLOG 的 v0.7.0 增補預計於第十七筆文件 Commit 提交，於成功 Push 前不預填 SHA。
+
+### 六、限制、風險及 v1.0.0 後續事項
+- 尚無會員認證、暱稱唯一性或伺服器端防刷榜；可見排名只適用本機展示，不可直接當成公開競賽成績系統。
+- `server/app.mjs` 的 `/api/health` 在 SQLite 模式下仍顯示 `v0.5.0`，與新版介面版本不一致，後續應集中管理版本號並更新測試。
+- 下一階段需補充多裝置、鍵盤可及性、離線與逾時、長期資料庫備份／還原、負載與併發檢查；執行完整 E2E 驗收後，再考慮 v1.0.0 Release。
+
 ## 文件與版本治理備註（截至 2026-10-18）
 
 - README 整合 v0.1.0 與 v0.2.0 的**仍有效內容**，作為最新專案入口；不另外保存多份主要 README。
@@ -446,3 +488,8 @@ npm start
 ### v0.6.0 文件增量更新說明（2026-10-18）
 - 保留原本 Session 00–07 的開發紀錄及歷史限制；本次新增 Session 08，並把 README 最新使用方式改為 Express 3000 埠全端入口，CHANGELOG 新增獨立 v0.6.0 章節。
 - 本次文件為功能 Commit `fb97364` 之後的補充更新；不預先聲稱第十五筆文件 Commit 已建立。
+
+### v0.7.0 文件增量更新說明（2026-10-19）
+- 保留 Session 00–08 的完整歷史內容；此次追加 Session 09。既有版本當時尚未完成的功能敘述屬歷史狀態，不能以當前進度覆寫。
+- README 介紹當前 v0.7.0 入口、排行榜與最新驗收狀態；CHANGELOG 新增獨立版本章節；DEVLOG 詳載修改原因與實際 Git 證據。
+- 第十六筆功能 Commit `09e06da` 已建立；第十七筆文件 Commit 尚須由使用者在本機驗收後執行。

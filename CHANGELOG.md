@@ -9,6 +9,33 @@
 - v1.0.0：完成跨瀏覽器及端到端驗收、資料備份策略、部署安全與正式發布準備。
 - v1.0.0：完整 MVP 整合驗收與發布準備；仍需完成安全、資料審核和備份／還原評估。
 
+## [0.7.0] — 2026-10-19（排行榜與歷史成績里程碑）
+
+### Added
+- 首頁新增排行榜與歷史成績入口及對應介面，沿用原本深色設計與響應式樣式。
+- 增加 `public/js/scores-view.mjs`：顯示前十名排行榜、最近 20 筆完成成績及歷史場次逐題回顧；處理載入、空清單、網路異常與回到首頁。
+- 新增 `GET /api/leaderboard?limit=10`，回應 `{ "scores": [...] }`，允許 `limit` 為 1–100；前端 API Client 新增排行榜查詢方法。
+- 在記憶體與 SQLite 儲存層加入獨立排行榜存取，SQLite 直接針對 `results` 進行資料庫排序後才 LIMIT，避免僅對最近成績排序造成排名錯誤。
+- 新增 `docs/LEADERBOARD_DESIGN.md`、`tests/leaderboard.test.mjs`（記憶體與 SQLite 各一例）、`tests/leaderboard-http.test.mjs`（一例）。
+
+### Changed
+- 排名規則：**分數降序 → 正確率降序 → 完成時間升序 → 場次 ID 字典序**；最近成績仍獨立依完成時間降序顯示。
+- 以 DOM 文字節點呈現使用者暱稱與題目資訊，避免將不可信字串拼接為 HTML。
+- 原有 SQLite 資料表及 Schema 版本不變，舊有結果可沿用；既有 v0.6.0 限時問答與結算流程不受影響。
+
+### Tested
+- v0.6.0 累計 60 項回歸測試保留；v0.7.0 新增 3 項排行榜自動化測試，**預期完整測試總數 63 項**。此前使用者提供的截圖未完整呈現 `tests/pass/fail` 總數，因此不把 63 / 63 寫成已獨立核實的結果。
+- 開發者已回報 v0.7.0 瀏覽器功能操作正常；Git 暫存區檢查無行尾空白錯誤，功能 Commit 已推送遠端。
+
+### Known Limitations
+- 目前排行榜以「完成場次」為紀錄，不是玩家去重排名；未實作會員識別、暱稱唯一性、公開服務的授權或防刷榜。
+- 仍未驗證大量歷史紀錄效能、跨裝置自動化 E2E、完整資安稽核及 SQLite 備份還原。
+- `/api/health` 在 SQLite 模式下沿用 v0.5.0 版本字串，即使 v0.7.0 功能已安裝；屬已知版本標示問題，留待 v1.0.0 修正。
+
+### Related Commit
+- [`09e06da`](https://github.com/Chiou-Jiakang/quiz-arena/commit/09e06da) — `feat: implement leaderboard and score history UI`（第十六筆）。
+- 本次文件更新預計作為第十七筆 Commit，尚未建立之前不記錄 SHA。
+
 ## [0.6.0] — 2026-10-18（前後端正式整合里程碑）
 
 ### Added
