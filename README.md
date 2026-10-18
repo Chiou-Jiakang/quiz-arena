@@ -1,6 +1,6 @@
 # Quiz Arena｜知識競技場
 
-> **目前開發里程碑：v0.2.0 — Single-Player Quiz System**
+> **目前開發里程碑：v0.3.0 — Quiz Timer System**
 > **狀態：前端單機遊戲可操作；完整全端 MVP 尚在開發中**
 > **最後文件更新：2026-10-18**
 
@@ -8,7 +8,7 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 
 本專案採用 **AI-Assisted Development × Iterative Development**：由 AI 協助產生與調整程式碼，再進行本機執行、功能測試、問題修正、Code Review 與 Git 版本紀錄。每個里程碑保留對應的程式碼、測試與中文開發文件。
 
-**重要區別：** v0.2.0 是「可玩的前端單機版本」，**不是**已完成的全端 MVP；20 秒倒數、後端答案驗證、SQLite 持久化與排行榜仍未實作。
+**重要區別：** v0.3.0 已具備每題 20 秒倒數及逾時處理，仍是「可玩的前端單機版本」，**不是**完整全端 MVP；後端截止時間／答案驗證、SQLite 持久化與排行榜尚未實作。
 
 ---
 
@@ -24,15 +24,15 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 
 ## 2. 遊戲規則：目標規格與目前狀態
 
-| 項目 | MVP 規格 | v0.2.0 現況 |
+| 項目 | MVP 規格 | v0.3.0 現況 |
 | --- | --- | --- |
 | 遊戲模式 | 單人問答、免註冊暱稱 | 已實作 |
 | 題目數量 | 每局 10 題且不可重複 | 已實作 |
 | 題目形式 | 每題四選一 | 已實作 |
 | 類別 | 綜合知識、科技、科學、歷史、地理 | 已實作 |
 | 難度 | 簡單、中等、困難 | 已實作 |
-| 每題限時 | 20 秒，逾時視為答錯 | **尚未實作**（目前不限時） |
-| 計分 | 答對 +100；答錯或逾時 +0 | 答對／答錯已實作；逾時尚未實作 |
+| 每題限時 | 20 秒，逾時視為答錯 | **前端已實作**：截止時間判斷、時間到自動記錄；尚無伺服器驗證 |
+| 計分 | 答對 +100；答錯或逾時 +0 | **前端已實作**：正確、錯誤、逾時三種結果 |
 | 滿分 | 1,000 分 | 已實作 |
 | 作答回饋 | 正誤、正解及解析 | 已實作 |
 | 完成結算 | 總分、答對率、逐題回顧 | 已實作（瀏覽器記憶體） |
@@ -79,7 +79,26 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 - 新增 `quiz-engine.mjs` 將遊戲狀態／計分邏輯與 DOM 操作分離，增加七項邏輯測試。
 - 延續原首頁的配色與排版設計至遊戲、作答回饋、結算頁面。
 
-**目前限制：** 本階段尚無倒數計時；答題紀錄只保留在瀏覽器記憶體，重新整理後不保留；正解位於前端 JSON，**不具防作弊能力**。詳細設計見[Stage 2 實作文件](docs/STAGE2_IMPLEMENTATION.md)。
+**v0.2.0 當時的限制（歷史狀態）：** 本階段尚無倒數計時（已於 v0.3.0 加入前端計時）；答題紀錄只保留在瀏覽器記憶體，重新整理後不保留；正解位於前端 JSON，**不具防作弊能力**。詳細設計見[Stage 2 實作文件](docs/STAGE2_IMPLEMENTATION.md)。
+
+### v0.3.0 — 每題 20 秒計時及逾時處理（2026-10-18）
+
+**計時機制及畫面**
+- 每題進入作答狀態後顯示 **20 秒倒數**與時間進度條；剩餘最後五秒提供醒目的警示狀態。
+- 新增 `public/js/quiz-timer.mjs`，以 `performance.now()` 計算實際截止時間，而不是假設 `setInterval()` 每次都準時執行；瀏覽器分頁背景執行延遲不會讓答題期限無限延長。
+- 玩家在截止期限之後才點選答案時，應以逾時判定，而不是因計時器回呼延遲仍接受作答。
+
+**答案狀態及遊戲流程**
+- 新增 `submitTimeout()`；逾時記錄為 `chosenIndex: null`、`timedOut: true`，不增加分數，並鎖定選項、顯示正解與解析。
+- 答對、答錯和逾時互斥，同一題不會重複提交或重複加分；結算逐題回顧顯示「未作答（時間到）」等逾時資訊。
+- 作答、逾時、換題、離開、結算及重新挑戰時清理或重設計時器；每題均取得新的 20 秒期限，回饋期間不倒數。
+- 處理題庫載入中的非同步離開情況，降低舊回應晚到後覆蓋目前畫面的風險。
+
+**測試與限制**
+- 新增 6 項計時器測試及 4 項遊戲逾時狀態測試，與先前 14 項合計 **24 項自動化測試通過（0 failed）**；開發者另回報 v0.3.0 瀏覽器操作未見主要異常。
+- 仍是純前端計時。若分頁凍結或裝置休眠，畫面無法在停機期間即時更新，恢復執行時才會補判逾時。使用者也能操作瀏覽器程式繞過驗證，因此不能作為正式競賽的防作弊依據。
+
+詳細技術取捨與人工驗收項目請參閱 [計時系統設計](docs/TIMER_DESIGN.md)。
 
 ## 4. 技術架構與模組責任
 
@@ -89,13 +108,14 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 | 樣式及 RWD | CSS3 | 已使用；深色主題、狀態視覺、不同裝置寬度 |
 | 前端互動 | JavaScript (ES Modules) | 已使用；DOM、事件、`fetch()`、遊戲畫面 |
 | 題庫及抽題 | JSON + `quiz-data.mjs` | 已使用；資料驗證、類別難度篩選、洗牌 |
-| 遊戲邏輯 | `quiz-engine.mjs` | 已使用；作答狀態、計分、進度、結算 |
+| 遊戲邏輯 | `quiz-engine.mjs` | 已使用；作答、逾時狀態、計分、進度、結算 |
+| 題目計時 | `quiz-timer.mjs` / `performance.now()` | 已使用；20 秒截止判定、倒數回呼與計時器清理 |
 | 自動化測試 | Node.js `node:test` | 已使用；題庫及遊戲邏輯單元測試 |
 | 後端 | Node.js / Express | 規劃中；正式 API、場次與答案驗證 |
 | 資料庫 | SQLite | 規劃中；題庫、答題歷史、成績持久化 |
 | 版本與文件 | VS Code / Git / GitHub | 已使用；提交、測試與迭代紀錄 |
 
-**目前資料流（前端原型）：** 設定表單 → `fetch()` 讀取 JSON → 題庫過濾與抽題 → 遊戲邏輯判定 → DOM 更新 → 暫存結算結果。
+**目前資料流（前端原型）：** 設定表單 → `fetch()` 讀取 JSON → 題庫過濾與抽題 → 每題建立截止時間 → 玩家作答或逾時 → 遊戲邏輯判定 → DOM 更新 → 暫存結算結果。
 
 **目標資料流（完整 MVP）：** 瀏覽器 → HTTP / JSON → Express API → SQLite；由後端控制正式場次、截止時間、正確答案與分數，避免信任前端自行提交的總分。**目前沒有後端 API**，請勿將本機 `http.server` 當作 Express。
 
@@ -112,15 +132,19 @@ quiz-arena/
 │   └── js/
 │       ├── app.js                # UI、事件與流程串接
 │       ├── quiz-data.mjs         # 題庫驗證與隨機抽題
-│       └── quiz-engine.mjs       # 進度、答案與計分邏輯
+│       ├── quiz-engine.mjs       # 進度、答案、逾時與計分邏輯
+│       └── quiz-timer.mjs        # 20 秒題目計時與清理
 ├── tests/
 │   ├── quiz-data.test.mjs        # 題庫及抽題測試
-│   └── quiz-engine.test.mjs      # 單機遊戲邏輯測試
+│   ├── quiz-engine.test.mjs      # 單機遊戲邏輯測試
+│   ├── quiz-timer.test.mjs       # 題目計時器測試
+│   └── quiz-timeout.test.mjs     # 遊戲逾時狀態測試
 ├── docs/
 │   ├── PRD.md                    # MVP 需求與驗收標準
 │   ├── DEVLOG.md                 # 逐次開發日誌
 │   ├── QUESTION_BANK_DESIGN.md   # 題庫格式與限制
-│   └── STAGE2_IMPLEMENTATION.md  # Stage 2 技術說明
+│   ├── STAGE2_IMPLEMENTATION.md  # Stage 2 技術說明
+│   └── TIMER_DESIGN.md           # v0.3.0 計時設計
 ├── README.md
 ├── CHANGELOG.md
 └── .gitignore
@@ -145,7 +169,7 @@ quiz-arena/
    ```
 
 3. 在瀏覽器開啟 **http://localhost:5500**。
-4. 點擊「開始挑戰」，輸入暱稱、選擇類別和難度，進入十題問答。完成後可查看結果並重玩。
+4. 點擊「開始挑戰」，輸入暱稱、選擇類別和難度，進入十題問答；每題自動倒數 20 秒，逾時記為 0 分。完成後可查看結果並重玩。
 5. 以 `Ctrl + C` 停止伺服器。
 
 **注意：** 使用 HTTP 伺服器而非直接開啟 `index.html` 的 `file://` 路徑，因為本版本使用 ES Modules 與 `fetch()` 讀取 JSON。若 5500 埠已被使用，請停止佔用程序或改用其他埠，並開啟對應網址。前端版本無需執行 `npm install` 或啟動 Express。
@@ -163,9 +187,11 @@ node --test tests/*.test.mjs
 ```powershell
 node --test tests/quiz-data.test.mjs
 node --test tests/quiz-engine.test.mjs
+node --test tests/quiz-timer.test.mjs
+node --test tests/quiz-timeout.test.mjs
 ```
 
-若終端機顯示 `pass 14`、`fail 0`，表示目前 14 個測試案例通過；仍須另外測試瀏覽器實際操作。
+目前 v0.3.0 的完整驗收紀錄是 `tests 24`、`pass 24`、`fail 0`；其中 v0.2.0 的 14 項仍保留並持續執行。單元測試不能取代瀏覽器操作、跨裝置及伺服器安全測試。
 
 ## 7. 測試與品質狀態
 
@@ -175,8 +201,11 @@ node --test tests/quiz-engine.test.mjs
 | v0.2.0 Stage 1 | 題庫完整性、類別／難度、唯一性、參數防護、抽題等 7 項 Node.js 測試 | 7 / 7 通過；不代表題目內容已逐題查證 |
 | v0.2.0 Stage 2 | 遊戲進度、計分、防重複提交與結算等 7 項 Node.js 測試 | 7 / 7 通過；合計 14 / 14 |
 | v0.2.0 瀏覽器 | 開發者回報完成單人問答及結果頁面操作驗收 | 未發現主要異常；尚非跨瀏覽器全覆蓋測試 |
+| v0.3.0 計時器 | 6 項截止時間、背景延遲、停止與重啟等單元測試 | 6 / 6 通過 |
+| v0.3.0 逾時流程 | 4 項未作答、重複提交、分數與結果混合測試 | 4 / 4 通過；全專案合計 24 / 24 |
+| v0.3.0 瀏覽器 | 開發者回報倒數、逾時、換題與重玩操作正常 | 人工驗收回報；尚非跨瀏覽器或安全測試 |
 
-**仍待驗證／改善：** 計時器與逾時邊界、伺服器安全、持久化、API 失敗與網路不穩時的處理、正式資料正確性、可及性及系統化 E2E 測試。測試紀錄不得等同「100% 無 Bug」。
+**仍待驗證／改善：** 正式伺服器端截止時間判定與防作弊、持久化、API 失敗與網路不穩時的處理、正式資料正確性、可及性、不同瀏覽器／裝置，以及系統化 E2E 測試。前端計時測試通過不等於「100% 無 Bug」。
 
 ## 8. Roadmap（漸進式里程碑）
 
@@ -185,7 +214,7 @@ node --test tests/quiz-engine.test.mjs
 | v0.1.0 | 首頁、遊戲設定及基本 RWD | 已完成 |
 | v0.2.0 Stage 1 | 120 題題庫、驗證與抽題 | 已完成 |
 | v0.2.0 Stage 2 | 單人十題問答、計分及結算 | 已完成 |
-| v0.3.0 | 20 秒倒數、逾時判定與計時狀態清理 | 待開發 |
+| v0.3.0 | 20 秒倒數、逾時判定與計時狀態清理 | 已完成（前端） |
 | v0.4.0 | Node.js / Express REST API | 待開發 |
 | v0.5.0 | SQLite 題庫、成績與 CRUD | 待開發 |
 | v0.6.0 | 後端驗證、API 與前端正式整合 | 待開發 |
@@ -212,6 +241,7 @@ node --test tests/quiz-engine.test.mjs
 - [版本變更紀錄（CHANGELOG）](CHANGELOG.md)
 - [題庫設計及抽題規則](docs/QUESTION_BANK_DESIGN.md)
 - [v0.2.0 Stage 2 技術實作](docs/STAGE2_IMPLEMENTATION.md)
+- [v0.3.0 計時器與逾時設計](docs/TIMER_DESIGN.md)
 
 ## 11. 最近開發更新
 
@@ -222,16 +252,18 @@ node --test tests/quiz-engine.test.mjs
 | 2026-10-17 | v0.1.0 首頁與設定、人工驗收及文件更新 | [`a26df7d`](https://github.com/Chiou-Jiakang/quiz-arena/commit/a26df7d)、[`7e5f0f0`](https://github.com/Chiou-Jiakang/quiz-arena/commit/7e5f0f0) |
 | 2026-10-17 | v0.2.0 Stage 1：題庫與抽題模組 | [`5abee22`](https://github.com/Chiou-Jiakang/quiz-arena/commit/5abee22) |
 | 2026-10-18 | v0.2.0 Stage 2：遊戲流程、計分、結算及測試 | [`7cc94e2`](https://github.com/Chiou-Jiakang/quiz-arena/commit/7cc94e2) |
+| 2026-10-18 | 合併 v0.1.0–v0.2.0 中文文件歷程 | [`9288af8`](https://github.com/Chiou-Jiakang/quiz-arena/commit/9288af8) |
+| 2026-10-18 | v0.3.0 20 秒計時、逾時處理與 24 項測試 | [`78e6ecf`](https://github.com/Chiou-Jiakang/quiz-arena/commit/78e6ecf) |
 
 最新文件更新的 Commit 將於成功提交後出現在 Git 歷史中；本文件不預先填寫尚未產生的 SHA。
 
-## 12. 下一階段：v0.3.0
+## 12. 下一階段：v0.4.0
 
-下一階段將加入**每題 20 秒倒數與逾時得 0 分**的規則，以及按題切換、重新遊玩、離開／返回時的計時器清理，並補充邊界測試。正式的伺服器端計時與答案驗證則留待後端整合階段。
+下一階段將建立 **Node.js / Express REST API**，逐步從前端示範流程切換至後端控制遊戲場次、題目存取及錯誤回應。後續 v0.5.0 再整合 SQLite，v0.6.0 落實由伺服器驗證正確答案、作答截止時間和成績。相關 API 規格應先確認資料契約與錯誤格式，再新增整合測試。
 
 ---
 
 **Repository：** https://github.com/Chiou-Jiakang/quiz-arena
-**Current Milestone：** v0.2.0（Frontend Prototype）
+**Current Milestone：** v0.3.0（Timed Frontend Prototype）
 **Project Status：** Active Development
 **Last Updated：** 2026-10-18
