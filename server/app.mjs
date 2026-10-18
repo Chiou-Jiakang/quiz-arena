@@ -1,0 +1,24 @@
+/** Express HTTP adapter; business rules live in game-service.mjs. */
+import express from 'express';
+import { ApiError } from './game-service.mjs';
+
+export function createApp(service) {
+  const app = express();
+  app.disable('x-powered-by');
+  app.use(express.json({ limit: '16kb' }));
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: 'v0.4.0', persistence: 'memory' }));
+  app.get('/api/config', (_req, res) => res.json(service.getConfig()));
+  app.post('/api/games', (req, res) => res.status(201).json(service.create(req.body)));
+  app.get('/api/games/:id', (req, res) => res.json(service.read(req.params.id)));
+  app.post('/api/games/:id/answers', (req, res) => res.json(service.answer(req.params.id, req.body)));
+  app.post('/api/games/:id/next', (req, res) => res.json(service.next(req.params.id)));
+  app.use('/api', (_req, _res, next) => next(new ApiError(404, 'ROUTE_NOT_FOUND', 'API 路徑不存在。')));
+  app.use((error, _req, res, _next) => {
+    if (error instanceof ApiError) return res.status(error.status).json({ error: { code: error.code, message: error.message } });
+    if (error.type === 'entity.too.large') return res.status(413).json({ error: { code: 'BODY_TOO_LARGE', message: '請求內容過大。' } });
+    if (error instanceof SyntaxError && error.status === 400 && 'body' in error) return res.status(400).json({ error: { code: 'INVALID_JSON', message: 'JSON 格式錯誤。' } });
+    console.error('[Quiz Arena API]', error);
+    return res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: '伺服器處理失敗。' } });
+  });
+  return app;
+}

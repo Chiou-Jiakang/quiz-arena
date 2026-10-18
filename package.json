@@ -1,0 +1,14 @@
+{
+  "name": "quiz-arena",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Quiz Arena MVP — frontend quiz and standalone Express API",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": { "express": "^5.1.0" }
+}
