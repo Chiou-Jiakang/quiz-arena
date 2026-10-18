@@ -340,6 +340,58 @@ npm start
 
 ---
 
+## 2026-10-18｜Session 07：v0.5.0 SQLite Database、CRUD 與持久化驗收
+
+### 一、本次目標與前置狀態
+- 承接 v0.4.0 已有的獨立 Express API。v0.4.0 的遊戲資料僅存於伺服器 `Map`，重新啟動會遺失；本階段要將場次、題目快照、作答及結果轉為 SQLite 持久化，且保留原有 HTTP 契約。
+- 以「獨立後端可持久化」作為 v0.5.0 驗收邊界；**不宣稱前端已透過 API 操作資料庫**。前後端整合屬 v0.6.0。
+- 不改動先前 v0.1.0～v0.4.0 的歷史測試成果與開發日誌。本階段功能程式與中文文件採不同 Commit 提交。
+
+### 二、使用技術與資料模型
+- Node.js 內建 `node:sqlite` 的同步資料庫介面 `DatabaseSync`，要求 Node.js >= 22.13.0；開發者本機為 `v24.15.0`，符合需求。採用內建模組避免額外安裝 Windows 原生 SQLite npm 套件。
+- 以資料庫儲存介面分離場次管理邏輯與實際存取，保留記憶體儲存實作供測試或比較；預設 SQLite 檔為 `data/quiz-arena.sqlite`，可用 `QUIZ_DB_PATH` 指定。
+- `schema_meta`：管理 Schema 版本；`games`：場次、玩家設定、進度、分數、階段、截止時間等；`game_questions`：十題順序與 JSON 快照；`game_answers`：作答索引、正確與逾時狀態；`results`：完成成績及逐題回顧。
+- 啟用外鍵、交易及 WAL，以交易保證一組場次與答案更新的原子性；Schema 自動初始化。儲存時間戳使用伺服器 `Date.now()`，因此系統時鐘變動仍是待評估風險。
+
+### 三、本次程式變更
+- 修改 `package.json` 與 `package-lock.json`：更新里程碑版本與相依／工具相關資訊。
+- 修改 `server/index.mjs`：建立 SQLite Store 並注入場次服務，讀取既有題庫，啟動本機 API。**已知啟動訊息仍含 `v0.4.0 API` 字樣**，但健康檢查回傳 v0.5.0／sqlite。
+- 修改 `server/game-service.mjs`：使用持久化 Store 管理場次及結果，保留後端 20 秒限制、答題判定與原有 API 契約。
+- 修改 `server/app.mjs`：加入歷史成績查詢及未完成場次刪除路由，並調整健康檢查儲存模式。
+- 新增 `server/sqlite-store.mjs` 與 `server/memory-store.mjs`；新增 `tests/sqlite-store.test.mjs`、`tests/api-sqlite-http.test.mjs`；新增 `docs/SQLITE_DESIGN.md`。
+- `.gitignore` 已涵蓋 `*.sqlite`／`*.db` 等資料庫檔案模式，資料檔及使用者資料不納入功能 Commit。
+
+### 四、API 擴充及資料生命週期
+- 維持既有六個 API 端點，增加 `GET /api/scores?limit=20`、`GET /api/scores/:id`、`DELETE /api/games/:id`，總計九個。
+- `GET /api/scores` 提供完成成績摘要，`limit` 允許 1–100；`GET /api/scores/:id` 讀取指定完成場次回顧。
+- `DELETE /api/games/:id` 僅刪除未完成場次，完成成績不允許透過這個 API 刪除。
+- 場次和題序保存後，重啟不會重新洗牌，也不會重設該題的 20 秒截止時間；沒有回報請求的停機期間不會執行背景計時，但下一次請求會補判逾時。
+- 未完成場次依最後活動時間設 1 小時 TTL，清理由後續 API 存取觸發；已完成的歷史成績獨立保留。
+
+### 五、實際安裝與測試紀錄
+**環境：** Windows／VS Code PowerShell，Node.js v24.15.0。
+
+1. 安裝包與原本 `quiz-arena` 專案並排放置，以 `install_v0.5.py` 執行升級；安裝程式回報成功，並在專案同層建立升級前的後端備份。
+2. 執行 `npm install`，回報相依套件已安裝且 `0 vulnerabilities`（屬當次 npm 稽核輸出，不代表未來永遠沒有安全漏洞）。
+3. 執行 `npm test`：**53 tests、53 passed、0 failed**，執行時間約 641 ms；相較 v0.4.0 的 40 項，增加 10 項 SQLite 儲存測試與 3 項 SQLite HTTP 測試。
+4. 測試涵蓋首次建表、資料庫重開、截止時間保持、作答／分數／下一題跨重啟、逾時冪等、結果與回顧永久保存、未完成場次刪除、完成成績保留、TTL 及 limit／未知 ID 的錯誤處理。
+5. 執行 `npm start` 後，瀏覽器 `/api/health` 實際顯示 `{"status":"ok","version":"v0.5.0","persistence":"sqlite"}`；因此可確認獨立 API 的健康檢查與 SQLite 模式已正常啟動。
+
+**測試邊界：** 額外手動呼叫 `/api/config` 時曾出現「無法連接至遠端伺服器」，當時 Express 已不在監聽；後續說明需要保留執行 `npm start` 的終端機，再用另一個終端機送請求。該手動呼叫與跨重啟取回同一場次的手動流程未完成，**不能紀錄為手動通過**。跨重啟的資料一致性有自動化測試證據。
+
+### 六、GitHub Commit、工作目錄及資料保護
+- 功能、測試與 API 技術文件以 [`eb5cb6a`](https://github.com/Chiou-Jiakang/quiz-arena/commit/eb5cb6a) — `feat: implement SQLite persistence and CRUD APIs` 提交至 `main`，開發者截圖確認 `HEAD`、`main`、`origin/main` 同步。
+- 本次準備獨立的第十三筆文件 Commit：更新 README、CHANGELOG、DEVLOG；**新 SHA 必須等實際提交成功後才確認**。
+- Git 曾顯示未追蹤的 `data/` 與 `STAGE2_README.txt`。其中 `data/` 可能包含真實 SQLite 執行資料，**不要 `git add data/`、不要整個刪除，也不要上傳至 GitHub**；需要先檢查內含資料及 `.gitignore`，再考慮整理。
+- `STAGE2_README.txt` 是早期暫存說明，不屬於正式程式或歷史文件，可保留在本機或確認內容後移出儲存庫。
+
+### 七、已知限制與後續階段
+- 雖然 SQLite 會保存後端遊戲場次及歷史成績，但 v0.5.0 的原生網頁遊戲仍直接從公開 JSON 抽題與判定答案，操作前端不會自動產生 SQLite 成績。v0.6.0 才進行真正前後端整合及題庫正解隔離。
+- 未實作正式登入、存取授權、限流、對外服務部署級防護、資料備份／還原、多人並行測試及正式排行榜。
+- 開發者已通過 53 項自動化測試，不能將其延伸解讀為完整端到端驗收或保證程式沒有 Bug。
+
+---
+
 ## 文件與版本治理備註（截至 2026-10-18）
 
 - README 整合 v0.1.0 與 v0.2.0 的**仍有效內容**，作為最新專案入口；不另外保存多份主要 README。
@@ -349,3 +401,8 @@ npm start
 - v0.3.0 README／CHANGELOG／DEVLOG 以此原始日誌為基底累積；不刪除 Session 00–04 的實際紀錄。
 
 - v0.4.0 已完成獨立 Express REST API 與 40 項測試，但與現有前端尚未整合；第十筆功能 Commit 為 `3506200`。這筆文檔更新只增加 Session 06 與上述版本說明，前面的 Session 00–05 仍完整保留。
+
+### v0.5.0 文件更新說明（2026-10-18）
+- 前述 Session 00–06 保留其原始紀錄及當時限制；本次只新增 Session 07、補齊現行 README 的 SQLite 操作說明，並在 CHANGELOG 插入獨立 v0.5.0 變更章節。
+- v0.5.0 的場次持久化僅代表**後端已實作**，不應被解讀為前端已經串接資料庫或具備正式防作弊。
+- 第十三筆文件 Commit 在 GitHub 真正確認以前，不預填 SHA 或宣稱已上傳。

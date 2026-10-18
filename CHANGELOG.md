@@ -5,9 +5,39 @@
 ## [Unreleased] — 後續規劃
 
 ### Planned
-- v0.5.0：建立 SQLite Schema、題庫／場次／成績持久化及資料操作測試。
-- v0.6.0：前後端正式串接 API，將公開前端正解移至受保護後端來源。
-- v0.7.0 與 v1.0.0：排行榜、品質改善與 MVP 整合驗收。
+- v0.6.0：瀏覽器前端正式串接 Express API 與 SQLite，完成伺服器權威答題及正解資料隔離。
+- v0.7.0：排行榜、互動及錯誤回饋、可及性、測試與品質強化。
+- v1.0.0：完整 MVP 整合驗收與發布準備；仍需完成安全、資料審核和備份／還原評估。
+
+## [0.5.0] — 2026-10-18（SQLite 資料庫、持久化及 CRUD API 里程碑）
+
+### Added
+- 使用 Node.js 內建 `node:sqlite`（Node.js >= 22.13.0），新增 `server/sqlite-store.mjs` 及 `server/memory-store.mjs`，分離場次邏輯與底層儲存。
+- SQLite 建立 `schema_meta`、`games`、`game_questions`、`game_answers`、`results` 資料表，記錄 Schema 版本、場次、題序快照、作答和永久成績。
+- 支援遊戲場次、截止時間、計分和題序跨 Express 重啟讀取；完成成績與逐題回顧獨立保留。
+- 新增交易、外鍵與 WAL 支援，避免單次操作的部分更新破壞資料一致性。
+- 新增 `GET /api/scores?limit=20`、`GET /api/scores/:id` 及 `DELETE /api/games/:id`；維持既有 v0.4.0 API 端點。
+- 成績列表限制 1–100 筆；只允許刪除未完成場次，歷史完成成績不得透過此路由刪除。
+- 新增 `docs/SQLITE_DESIGN.md`、`tests/sqlite-store.test.mjs` 和 `tests/api-sqlite-http.test.mjs`。
+
+### Changed
+- 本機後端預設改為 SQLite 持久化：`data/quiz-arena.sqlite`（可用 `QUIZ_DB_PATH` 覆寫）；伺服器啟動前檢查並初始化 Schema。
+- `/api/health` 目前回傳 `version: v0.5.0`、`persistence: sqlite`。
+- 將仍存於 v0.4.0 記憶體模式的限制視為歷史狀態，不再當成 v0.5.0 現況。
+
+### Tested
+- Windows／Node.js v24.15.0：`npm install` 成功，`npm test` **53 passed、0 failed**；包括舊有 40 項、10 項 SQLite 儲存測試與 3 項 SQLite HTTP 測試。
+- `npm start` 可啟動 Express，瀏覽器 `/api/health` 已實際回傳 `status: ok`、`version: v0.5.0`、`persistence: sqlite`。
+- 曾在 Express 已停止時手動請求 `/api/config` 而遇到 `ERR_CONNECTION_REFUSED`；額外人工 `/api/config` 及跨重啟取回同一場次 ID 的測試未完成。資料跨重啟能力已由自動化測試覆蓋。
+
+### Known Limitations
+- 現有前端仍是獨立單機遊戲，未經 API 將答題或分數送往 SQLite；公開 JSON 題庫仍有正解，尚非整體防作弊版本。
+- 無登入與授權、正式排行榜、對外部署安全、資料庫備份／還原及多程序併發驗收。
+- 未完成場次採最後活動 1 小時 TTL 並於 API 存取時清理；完成成績保留，需建立正式資料保護及刪除政策。
+- `server/index.mjs` 的啟動文字仍顯示 `v0.4.0 API`，與實際 `/api/health` 回傳 v0.5.0 不一致；這是待修正的顯示問題，不應誤認為 API 仍是 v0.4.0。
+
+### Related Commit
+- [`eb5cb6a`](https://github.com/Chiou-Jiakang/quiz-arena/commit/eb5cb6a) — `feat: implement SQLite persistence and CRUD APIs`
 
 ## [0.4.0] — 2026-10-18（獨立 Express REST API 里程碑）
 
