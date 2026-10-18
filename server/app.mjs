@@ -6,11 +6,14 @@ export function createApp(service) {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '16kb' }));
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: 'v0.4.0', persistence: 'memory' }));
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: service.persistence === 'sqlite' ? 'v0.5.0' : 'v0.4.0', persistence: service.persistence }));
+  app.get('/api/scores', (req, res) => res.json(service.listScores(req.query.limit === undefined ? 20 : Number(req.query.limit))));
+  app.get('/api/scores/:id', (req, res) => res.json(service.readScore(req.params.id)));
   app.get('/api/config', (_req, res) => res.json(service.getConfig()));
   app.post('/api/games', (req, res) => res.status(201).json(service.create(req.body)));
   app.get('/api/games/:id', (req, res) => res.json(service.read(req.params.id)));
   app.post('/api/games/:id/answers', (req, res) => res.json(service.answer(req.params.id, req.body)));
+  app.delete('/api/games/:id', (req, res) => { service.delete(req.params.id); res.status(204).end(); });
   app.post('/api/games/:id/next', (req, res) => res.json(service.next(req.params.id)));
   app.use('/api', (_req, _res, next) => next(new ApiError(404, 'ROUTE_NOT_FOUND', 'API 路徑不存在。')));
   app.use((error, _req, res, _next) => {
