@@ -36,6 +36,7 @@ export function createApiClient({ fetchFn = globalThis.fetch, base = '/api' } = 
     answer: (id, chosenIndex) => request(`/games/${encodeURIComponent(id)}/answers`, 'POST', { chosenIndex }),
     next: id => request(`/games/${encodeURIComponent(id)}/next`, 'POST'),
     scores: (limit = 20) => request(`/scores?limit=${encodeURIComponent(limit)}`),
+    leaderboard: (limit = 10) => request(`/leaderboard?limit=${encodeURIComponent(limit)}`),
     score: id => request(`/scores/${encodeURIComponent(id)}`)
   };
 }

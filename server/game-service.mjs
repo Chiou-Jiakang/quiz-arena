@@ -118,6 +118,7 @@ export function createGameService({ bank, now = Date.now, random = Math.random, 
     },
     delete(id) { const s=get(id); if (s.phase==='finished') throw new ApiError(409,'GAME_FINISHED','已完成場次的成績應保留，不能刪除。'); return store.delete(id); },
     listScores(limit=20) {if (!Number.isInteger(limit)||limit<1||limit>100) throw invalid('limit 須為 1–100。');return {scores:store.listResults(limit)};},
+    leaderboard(limit=10) {if (!Number.isInteger(limit)||limit<1||limit>100) throw invalid('limit 須為 1–100。');return {scores:store.leaderboard(limit)};},
     readScore(id) {const result=store.result(id);if (!result) throw new ApiError(404,'SCORE_NOT_FOUND','查無歷史成績。');return result;},
     count() { prune(); return store.count(); }
   };

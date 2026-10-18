@@ -18,6 +18,7 @@ export function createMemoryStore() {
     prune(cutoff){for(const [id,s] of games)if(s.phase!=='finished'&&s.lastSeen<cutoff)games.delete(id);},
     count(){return [...games.values()].filter(s=>s.phase!=='finished').length;},
     listResults(limit=20){return [...results.values()].sort((a,b)=>b.completedAt-a.completedAt).slice(0,limit).map(({review,...v})=>v);},
+    leaderboard(limit=10){return [...results.values()].sort((a,b)=>b.score-a.score||b.accuracy-a.accuracy||a.completedAt-b.completedAt||a.id.localeCompare(b.id)).slice(0,limit).map(({review,...v})=>v);},
     result(id){const x=results.get(id);return x?structuredClone(x):null;},
     close(){}
   };

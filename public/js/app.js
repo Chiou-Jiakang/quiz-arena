@@ -1,9 +1,10 @@
 import { createApiClient } from './api-client.mjs';
+import { createScoresController } from './scores-view.mjs';
 import { createQuestionTimer } from './quiz-timer.mjs';
 
 const api = createApiClient();
 const $ = selector => document.querySelector(selector);
-const views = { home: $('#home-view'), setup: $('#setup-view'), play: $('#play-view'), result: $('#result-view') };
+const views = { home: $('#home-view'), setup: $('#setup-view'), play: $('#play-view'), result: $('#result-view'), scores: $('#scores-view') };
 const form = $('#setup-form');
 const message = $('#form-message');
 const STORAGE_KEY = 'quiz-arena-active-game-v0.6';
@@ -60,6 +61,8 @@ function clearGame() {
   sessionStorage.removeItem(STORAGE_KEY);
 }
 function goHome() { clearGame(); message.textContent = ''; showView('home'); }
+const scoresController = createScoresController({api, root: $('#scores-view'), back: () => showView('home')});
+$('#scores-open').addEventListener('click', () => { showView('scores'); scoresController.open(); });
 $('#start-btn').addEventListener('click', () => { showView('setup'); $('#nickname').focus(); });
 $('#back-btn').addEventListener('click', goHome);
 $('#brand-link').addEventListener('click', event => {

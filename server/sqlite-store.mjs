@@ -57,6 +57,7 @@ export function createSQLiteStore({ file = 'data/quiz-arena.sqlite' } = {}) {
     count: db.prepare("SELECT COUNT(*) AS n FROM games WHERE phase <> 'finished'"),
     result: db.prepare('SELECT * FROM results WHERE game_id=?'),
     listResults: db.prepare('SELECT game_id,player,category,difficulty,score,correct_count,timed_out_count,accuracy,completed_at FROM results ORDER BY completed_at DESC, game_id DESC LIMIT ?'),
+    leaderboard: db.prepare('SELECT game_id,player,category,difficulty,score,correct_count,timed_out_count,accuracy,completed_at FROM results ORDER BY score DESC, accuracy DESC, completed_at ASC, game_id ASC LIMIT ?'),
     insertResult: db.prepare(`INSERT OR IGNORE INTO results(game_id,player,category,difficulty,score,correct_count,timed_out_count,accuracy,completed_at,review_json)
       VALUES(?,?,?,?,?,?,?,?,?,?)`)
   };
@@ -101,6 +102,7 @@ export function createSQLiteStore({ file = 'data/quiz-arena.sqlite' } = {}) {
     prune(cutoff) {q.prune.run(cutoff);},
     count() {return q.count.get().n;},
     listResults(limit=20) {return q.listResults.all(limit).map(row=>({id:row.game_id,player:row.player,category:row.category,difficulty:row.difficulty,score:row.score,correct:row.correct_count,timedOut:row.timed_out_count,accuracy:row.accuracy,completedAt:row.completed_at}));},
+    leaderboard(limit=10) {return q.leaderboard.all(limit).map(row=>({id:row.game_id,player:row.player,category:row.category,difficulty:row.difficulty,score:row.score,correct:row.correct_count,timedOut:row.timed_out_count,accuracy:row.accuracy,completedAt:row.completed_at}));},
     result(id) {const row=q.result.get(id);if(!row)return null;return {id:row.game_id,player:row.player,category:row.category,difficulty:row.difficulty,score:row.score,correct:row.correct_count,timedOut:row.timed_out_count,accuracy:row.accuracy,completedAt:row.completed_at,review:JSON.parse(row.review_json)};},
     close() {db.close();}
   };

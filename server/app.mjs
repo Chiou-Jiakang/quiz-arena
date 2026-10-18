@@ -9,6 +9,7 @@ export function createApp(service) {
   app.use(express.json({ limit: '16kb' }));
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: service.persistence === 'sqlite' ? 'v0.5.0' : 'v0.4.0', persistence: service.persistence }));
   app.get('/api/scores', (req, res) => res.json(service.listScores(req.query.limit === undefined ? 20 : Number(req.query.limit))));
+  app.get('/api/leaderboard', (req, res) => res.json(service.leaderboard(req.query.limit === undefined ? 10 : Number(req.query.limit))));
   app.get('/api/scores/:id', (req, res) => res.json(service.readScore(req.params.id)));
   app.get('/api/config', (_req, res) => res.json(service.getConfig()));
   app.post('/api/games', (req, res) => res.status(201).json(service.create(req.body)));

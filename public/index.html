@@ -18,7 +18,7 @@
         <span class="brand__symbol" aria-hidden="true">✦</span>
         <span>QUIZ<span class="brand__accent">ARENA</span></span>
       </a>
-      <span class="version">FULL-STACK PREVIEW <span>v0.6.0 API + SQLite</span></span>
+      <span class="version">FULL-STACK PREVIEW <span>v0.7.0 Leaderboard</span></span>
     </header>
 
     <main id="main-content">
@@ -31,6 +31,7 @@
             <div class="hero__actions">
               <button type="button" class="btn btn--primary" id="start-btn">開始挑戰 <span aria-hidden="true">↗</span></button>
               <a class="btn btn--secondary" href="#how-to-play">遊戲規則 <span aria-hidden="true">↓</span></a>
+              <button type="button" class="btn btn--secondary" id="scores-open">排行榜與歷史成績 ↗</button>
             </div>
             <div class="hero__stats" aria-label="遊戲基本規則">
               <div><strong>10</strong><span>題／每場</span></div>
@@ -54,6 +55,23 @@
             <article class="rule-card"><span class="rule-card__index">02</span><span class="rule-card__icon" aria-hidden="true">◷</span><h3>限時答題</h3><p>每場 10 題，每題 20 秒，答對可得 100 分。</p></article>
             <article class="rule-card"><span class="rule-card__index">03</span><span class="rule-card__icon" aria-hidden="true">▤</span><h3>查看成績</h3><p>回顧答題成果，未來版本將加入排行榜。</p></article>
           </div>
+        </section>
+      </section>
+
+      <section class="view scores-view" id="scores-view" aria-labelledby="scores-title" hidden>
+        <button type="button" class="back-link" id="scores-back">← 返回首頁</button>
+        <div class="setup-heading"><span class="section-kicker">HALL OF KNOWLEDGE</span><h1 id="scores-title">排行榜與歷史成績</h1><p>分數排行榜與最近完成的挑戰（資料來自 SQLite）。</p></div>
+        <button type="button" class="btn btn--secondary" id="scores-refresh">重新整理 ↻</button>
+        <p id="scores-status" role="status" aria-live="polite">正在載入…</p>
+        <section class="scores-card"><h2>🏆 最高分排行榜（前 10 名）</h2>
+          <div class="scores-scroll"><table class="scores-table"><thead><tr><th>名次</th><th>玩家</th><th>類別</th><th>難度</th><th>分數</th><th>正確率</th></tr></thead><tbody id="leaderboard-list"></tbody></table></div>
+        </section>
+        <section class="scores-card"><h2>最近完成的 20 筆成績</h2>
+          <div class="scores-scroll"><table class="scores-table"><thead><tr><th>玩家</th><th>分數</th><th>完成時間</th><th>操作</th></tr></thead><tbody id="history-list"></tbody></table></div>
+        </section>
+        <section id="score-detail" class="scores-card" hidden aria-labelledby="score-detail-heading">
+          <h2 id="score-detail-heading"></h2><ol id="score-detail-review" class="review-list"></ol>
+          <button type="button" id="score-detail-close" class="btn btn--secondary">關閉回顧</button>
         </section>
       </section>
 
