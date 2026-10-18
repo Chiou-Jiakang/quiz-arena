@@ -5,9 +5,36 @@
 ## [Unreleased] — 後續規劃
 
 ### Planned
-- v0.6.0：瀏覽器前端正式串接 Express API 與 SQLite，完成伺服器權威答題及正解資料隔離。
-- v0.7.0：排行榜、互動及錯誤回饋、可及性、測試與品質強化。
+- v0.7.0：完成排行榜、歷史成績介面與品質強化，修正健康檢查版本字串。
+- v1.0.0：完成跨瀏覽器及端到端驗收、資料備份策略、部署安全與正式發布準備。
 - v1.0.0：完整 MVP 整合驗收與發布準備；仍需完成安全、資料審核和備份／還原評估。
+
+## [0.6.0] — 2026-10-18（前後端正式整合里程碑）
+
+### Added
+- 新增 `public/js/api-client.mjs`，統一前端呼叫 Express 的遊戲建立、狀態同步、提交答案及進入下一題操作。
+- 網頁改用 API 場次快照呈現題目、回饋及總分；後端負責截止時間、正確答案判定與 SQLite 持久化。
+- Express 伺服器提供首頁及核准的 `/css`、`/js` 靜態資源；正式網頁從 `http://127.0.0.1:3000/` 操作，不再使用 5500 靜態服務作為整合入口。
+- 瀏覽器保留場次 ID，重新載入時向 API 查詢未完成的遊戲；加入請求錯誤與狀態重新同步處理。
+- 新增 `tests/api-client.test.mjs`、`tests/frontend-http.test.mjs`、`docs/FRONTEND_BACKEND_INTEGRATION.md`。
+
+### Changed
+- `public/js/app.js` 從前端 JSON 抽題／自行計分轉向伺服器權威遊戲流程；保留舊模組以供回歸測試與理解演進。
+- `server/app.mjs` 只公開核准的靜態資源路徑，不直接提供含有正解的 `public/data/questions.json`。
+- `server/index.mjs` 啟動時列出 v0.6.0 遊戲與 API 本機入口。
+
+### Tested
+- v0.5.0 累計 53 項測試持續保留；新增 API Client 6 項、HTTP 前端整合 1 項。
+- 2026-10-18 使用者 Windows 本機執行 `npm test`：**60 passed、0 failed、0 skipped**；並回報瀏覽器遊戲功能正常。
+- 測試通過不代表已完成跨瀏覽器、部署級端到端、安全或效能驗證。
+
+### Known Limitations
+- `/api/health` 目前 SQLite 模式仍回傳 `version: v0.5.0`，與 `server/index.mjs` 的 v0.6.0 啟動訊息不一致；後續應修正版本資訊。
+- 尚無排行榜頁面、會員登入、跨裝置同步、完整部署安全及權限管理。
+- 題庫 JSON 仍存在原始碼／Git 歷史；Express 不公開該路徑，不等於已具正式防作弊保護。
+
+### Related Commit
+- [`fb97364`](https://github.com/Chiou-Jiakang/quiz-arena/commit/fb9736406e753d1845f1737c9ccba9a7d15aec71) — `feat: integrate frontend with Express API and SQLite`
 
 ## [0.5.0] — 2026-10-18（SQLite 資料庫、持久化及 CRUD API 里程碑）
 

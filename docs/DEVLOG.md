@@ -392,6 +392,42 @@ npm start
 
 ---
 
+## 2026-10-18｜Session 08：v0.6.0 前後端整合、60 項回歸測試與 Git 提交
+
+### 一、任務目標與版本基線
+- 基線為 v0.5.0 程式及第十三筆文件 Commit `425acd6`；已具備前端限時原型、Express API、SQLite 場次與成績紀錄，但先前前端和後端仍各自執行。
+- 本階段將正式瀏覽器遊戲切換為 API 驅動，讓伺服器統一驗證答案、截止時間、計分與儲存；保留 v0.1.0～v0.5.0 的歷史紀錄。
+
+### 二、程式檔案與模組變更
+- 修改 `public/index.html`、`public/js/app.js`：調整 v0.6.0 狀態描述、頁面事件及 API 快照驅動的問答／結算流程。
+- 新增 `public/js/api-client.mjs`：封裝 API 存取、回傳解析及錯誤處理；不再從前端自行取得正式題目的 `correctIndex` 並判定計分。
+- 修改 `server/app.mjs`：由 Express 提供首頁、CSS、JavaScript，限制靜態公開路徑；不提供包含答案的 `public/data/questions.json`。
+- 修改 `server/index.mjs`：提供本機全端入口 `http://127.0.0.1:3000/`，沿用原有 SQLite Store 與遊戲服務。
+- 更新 `package.json`、`package-lock.json`；新增 `tests/api-client.test.mjs`、`tests/frontend-http.test.mjs`、`docs/FRONTEND_BACKEND_INTEGRATION.md`。
+
+### 三、關鍵流程與責任分離
+1. 玩家在網頁輸入暱稱、知識類別和難度，發送建立遊戲請求；伺服器儲存 SQLite 場次，回傳第一題的公開資訊。
+2. 前端只顯示題目與四個選項；不以瀏覽器為判分來源。答案提交至後端，後端判定正誤、是否逾時與得分。
+3. 下一題或結算由 API 場次狀態驅動，完成成績寫入 SQLite；歷史成績查詢 API 為 v0.5.0 既有能力。
+4. 前端以本機儲存的場次 ID 呼叫讀取 API，在重新整理後嘗試恢復；若場次過期或請求失敗則需重新同步或重新建立遊戲。
+5. 計時器的畫面倒數與伺服器的正式截止時間需區分：伺服器判定是最後依據，瀏覽器顯示是提示。
+
+### 四、驗收事實與測試證據
+- v0.5.0 本機完整 53 項測試已通過；v0.6.0 另有 6 項 API Client 測試、1 項 HTTP 路由整合測試。
+- 使用者提供 Windows PowerShell `npm test` 截圖：`tests 60`、`pass 60`、`fail 0`、`skipped 0`，總執行時間約 551.777 ms。
+- 使用者另回報整合後的瀏覽器操作未發現問題。這是人工回報而非完整 E2E 自動化證據；不可宣稱完全沒有程式錯誤。
+- 本階段修改由 Git 的 `git diff --check` 檢查未見行尾空白錯誤；選定十個程式／測試／技術文件提交，避免包含 `data/`、`node_modules/` 與舊版臨時檔案。
+
+### 五、版本管理
+- v0.6.0 第十四筆功能 Commit：[`fb97364`](https://github.com/Chiou-Jiakang/quiz-arena/commit/fb9736406e753d1845f1737c9ccba9a7d15aec71)，訊息 `feat: integrate frontend with Express API and SQLite`。
+- 本次 README、CHANGELOG、DEVLOG 的整理預計作為**第十五筆文件 Commit**，尚未執行，故不預先填寫 Commit SHA。
+- 保留 Session 00–07 的原有內容與當時已知限制，避免用最新狀態覆蓋過去的演進證據。
+
+### 六、風險、已知限制與下一步
+- `server/app.mjs` 的健康檢查版本字串仍回傳 v0.5.0（SQLite 模式），但啟動訊息已標示 v0.6.0；這是已確認的版本標示不一致，將於後續修正。
+- 目前是可操作的本機全端原型，未建立正式的排行榜、部署資安與存取控制；題庫檔仍保留於 Git 及公開 Repository 歷史，不能宣稱已完成正式防作弊。
+- 下階段進入 v0.7.0：排行榜、歷史成績 UI、錯誤處理及可及性改善、測試擴充；之後 v1.0.0 執行 MVP 驗收與發布準備。
+
 ## 文件與版本治理備註（截至 2026-10-18）
 
 - README 整合 v0.1.0 與 v0.2.0 的**仍有效內容**，作為最新專案入口；不另外保存多份主要 README。
@@ -406,3 +442,7 @@ npm start
 - 前述 Session 00–06 保留其原始紀錄及當時限制；本次只新增 Session 07、補齊現行 README 的 SQLite 操作說明，並在 CHANGELOG 插入獨立 v0.5.0 變更章節。
 - v0.5.0 的場次持久化僅代表**後端已實作**，不應被解讀為前端已經串接資料庫或具備正式防作弊。
 - 第十三筆文件 Commit 在 GitHub 真正確認以前，不預填 SHA 或宣稱已上傳。
+
+### v0.6.0 文件增量更新說明（2026-10-18）
+- 保留原本 Session 00–07 的開發紀錄及歷史限制；本次新增 Session 08，並把 README 最新使用方式改為 Express 3000 埠全端入口，CHANGELOG 新增獨立 v0.6.0 章節。
+- 本次文件為功能 Commit `fb97364` 之後的補充更新；不預先聲稱第十五筆文件 Commit 已建立。
