@@ -7,7 +7,7 @@
   <meta name="description" content="Quiz Arena — 在知識競技場中挑戰自己。">
   <title>Quiz Arena | 知識競技場</title>
   <link rel="stylesheet" href="./css/style.css">
-  <script src="./js/app.js" defer></script>
+  <script type="module" src="./js/app.js"></script>
 </head>
 <body>
   <div class="ambient ambient--one" aria-hidden="true"></div>
@@ -18,7 +18,7 @@
         <span class="brand__symbol" aria-hidden="true">✦</span>
         <span>QUIZ<span class="brand__accent">ARENA</span></span>
       </a>
-      <span class="version">FRONTEND PREVIEW <span>v0.1.0</span></span>
+      <span class="version">FRONTEND PREVIEW <span>v0.2.0 Stage 2</span></span>
     </header>
 
     <main id="main-content">
@@ -59,7 +59,7 @@
 
       <section class="view setup-view" id="setup-view" aria-labelledby="setup-title" hidden>
         <button type="button" class="back-link" id="back-btn">← 返回首頁</button>
-        <div class="setup-heading"><span class="section-kicker">READY TO PLAY?</span><h1 id="setup-title">打造你的挑戰</h1><p>設定完畢後就能踏入競技場。正式答題系統正在下一階段開發。</p></div>
+        <div class="setup-heading"><span class="section-kicker">READY TO PLAY?</span><h1 id="setup-title">打造你的挑戰</h1><p>選好類別與難度，即可進入十題知識挑戰。</p></div>
         <form id="setup-form" class="setup-card">
           <label for="nickname">玩家暱稱 <span class="required">*</span></label>
           <input id="nickname" name="nickname" type="text" maxlength="20" placeholder="請輸入 1–20 個字元的暱稱" autocomplete="nickname" required>
@@ -69,9 +69,39 @@
           <label for="difficulty">難度</label>
           <select id="difficulty" name="difficulty"><option value="easy">簡單</option><option value="medium">中等</option><option value="hard">困難</option></select>
           <div class="setup-summary"><span>每場 <b>10 題</b></span><span>每題 <b>20 秒</b></span><span>答對 <b>100 分</b></span></div>
-          <button type="submit" class="btn btn--primary btn--full">確認遊戲設定 <span aria-hidden="true">↗</span></button>
+          <button type="submit" class="btn btn--primary btn--full">開始答題 <span aria-hidden="true">↗</span></button>
           <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
         </form>
+      </section>
+
+      <section class="view play-view" id="play-view" aria-labelledby="play-title" hidden>
+        <div class="play-topline"><span class="section-kicker">QUIZ IN PROGRESS</span><button type="button" class="back-link" id="quit-btn">結束挑戰，返回首頁</button></div>
+        <div class="play-metrics"><span id="play-player"></span><strong id="play-score">0 分</strong></div>
+        <div class="play-progress-head"><span id="play-progress-text">第 1 / 10 題</span><span id="play-category"></span></div>
+        <div class="progress-track" role="progressbar" id="play-progress" aria-label="作答進度" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><div id="play-progress-bar"></div></div>
+        <article class="question-card">
+          <span class="question-kicker" id="play-difficulty"></span>
+          <h1 id="play-title" tabindex="-1"></h1>
+          <div class="option-grid" id="answer-options" role="group" aria-label="答案選項"></div>
+          <div class="answer-feedback" id="answer-feedback" role="status" aria-live="polite" hidden>
+            <strong id="answer-feedback-title"></strong><p id="answer-explanation"></p>
+          </div>
+          <button type="button" class="btn btn--primary btn--full next-btn" id="next-btn" hidden>下一題 →</button>
+        </article>
+        <p class="prototype-notice">前端練習版：本階段尚未加入 20 秒計時或後端防作弊驗證，分數不會儲存。</p>
+      </section>
+
+      <section class="view result-view" id="result-view" aria-labelledby="result-title" hidden>
+        <div class="result-card">
+          <span class="section-kicker">CHALLENGE COMPLETED</span>
+          <h1 id="result-title">挑戰完成！</h1>
+          <p id="result-player"></p>
+          <div class="result-score" id="result-score">0 <small>/ 1000 分</small></div>
+          <div class="result-stats"><div><strong id="result-correct">0</strong><span>答對題數</span></div><div><strong id="result-accuracy">0%</strong><span>正確率</span></div></div>
+          <h2>逐題回顧</h2>
+          <ol class="review-list" id="review-list"></ol>
+          <div class="result-actions"><button type="button" class="btn btn--primary" id="retry-btn">使用相同設定再玩一次</button><button type="button" class="btn btn--secondary" id="result-home-btn">返回首頁</button></div>
+        </div>
       </section>
     </main>
     <footer class="footer"><span>© <span id="current-year"></span> Quiz Arena</span><span>Built to learn. Made to challenge.</span></footer>
