@@ -32,7 +32,7 @@ async function withServer(action) {
 }
 
 test('SQLite HTTP 健康檢查回傳版本與持久化狀態',()=>withServer(async ({request})=>{
-  const r=await request('/api/health');assert.equal(r.status,200);assert.equal(r.body.version,'v0.5.0');assert.equal(r.body.persistence,'sqlite');
+  const r=await request('/api/health');assert.equal(r.status,200);assert.equal(r.body.version,'v1.0.0-rc.1');assert.equal(r.body.persistence,'sqlite');
 }));
 
 test('SQLite HTTP DELETE 移除未完成場次；後續 GET 回 404',()=>withServer(async ({request})=>{

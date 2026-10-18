@@ -1,14 +1,20 @@
 {
   "name": "quiz-arena",
-  "version": "0.6.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "type": "module",
-  "description": "Quiz Arena MVP — frontend quiz and SQLite-backed Express API",
-  "engines": { "node": ">=22.13.0" },
+  "description": "Quiz Arena local MVP — v1.0.0 release candidate",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "start": "node server/index.mjs",
     "dev": "node --watch server/index.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "db:check": "node scripts/check-db.mjs",
+    "db:backup": "node scripts/backup-db.mjs"
   },
-  "dependencies": { "express": "^5.1.0" }
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }

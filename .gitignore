@@ -13,3 +13,7 @@ dist/
 .vscode/*.log
 *.log
 .DS_Store
+
+data/
+
+backups/
