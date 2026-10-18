@@ -493,3 +493,51 @@ npm start
 - 保留 Session 00–08 的完整歷史內容；此次追加 Session 09。既有版本當時尚未完成的功能敘述屬歷史狀態，不能以當前進度覆寫。
 - README 介紹當前 v0.7.0 入口、排行榜與最新驗收狀態；CHANGELOG 新增獨立版本章節；DEVLOG 詳載修改原因與實際 Git 證據。
 - 第十六筆功能 Commit `09e06da` 已建立；第十七筆文件 Commit 尚須由使用者在本機驗收後執行。
+
+---
+
+## 2026-10-19｜Session 10：v1.0.0-rc.1 發布候選版與品質驗收
+
+### 目標
+將已具備問答、後端判題、SQLite 持久化、排行榜及歷史成績的 v0.7.0 原型整理成 **v1.0.0-rc.1 候選版**，解決版本資訊不一致，提供可重複執行的資料庫檢查／備份工具及基本回歸測試。此 Session **不宣稱已正式公開發布**。
+
+### 一、GitHub 基準與迭代範圍
+- 前一階段 v0.7.0 文件更新已完成第十七筆 Commit [`d51b261`](https://github.com/Chiou-Jiakang/quiz-arena/commit/d51b261)。
+- 第十八筆功能 Commit 已建立且推送：[`bcaf0b3`](https://github.com/Chiou-Jiakang/quiz-arena/commit/bcaf0b3)，訊息 `feat: prepare v1.0.0 release candidate with database validation and backup`。
+- 修改範圍涵蓋 `.gitignore`、`package.json`、`package-lock.json`、`public/index.html`、`server/app.mjs`、`server/index.mjs`、`tests/api-sqlite-http.test.mjs`；新增發布候選版文件、SQLite 工具及新測試。
+- 保留 v0.1.0～v0.7.0 的原有檔案與開發歷程，不重新生成題庫或改寫計分規則。
+
+### 二、版本一致性修復
+- 先前 v0.6.0／v0.7.0 已存在的已知問題：SQLite 模式 `/api/health` 回傳 `v0.5.0`，與遊戲介面及後端啟動顯示不一致。
+- v1.0.0-rc.1 已統一 `package.json`、鎖定檔、首頁版本文字、啟動訊息、健康檢查及相對應測試。
+- 預期 `GET http://127.0.0.1:3000/api/health` 回傳 `{"status":"ok","version":"v1.0.0-rc.1","persistence":"sqlite"}`。
+- 歷史版本的舊字串只保留在歷史說明中；不能將舊版的正確行為誤寫成目前仍有的缺陷。
+
+### 三、資料庫檢查、備份與資料保護
+- `scripts/check-db.mjs`：以 Node.js `node:sqlite` 唯讀開啟資料庫，執行 SQLite 完整性檢查，驗證 Schema `1` 與 `schema_meta`、`games`、`game_questions`、`game_answers`、`results` 等必要資料表，回報場次／成績筆數。
+- `scripts/backup-db.mjs`：採 SQLite Online Backup API 進行備份，避免在 WAL 模式中直接複製 `.sqlite` 主檔的不完整風險，並檢查輸出資料庫。
+- `.gitignore` 新增本機資料與備份目錄忽略規則；避免使用 `git add .` 將 SQLite、快取或臨時檔案誤加入版本歷史。
+- 使用者實際執行 `npm run db:check`，畫面顯示 `valid: true`、`schemaVersion: "1"`、`games: 2`、`results: 2`；`npm run db:backup` 顯示備份成功且完整性正常，備份檔位於 `backups/`。
+- **證據範圍：** 已證實備份生成與完整性檢查，不等於完成還原後重新啟動及比對成績；還原演練維持未完成項目。
+
+### 四、自動化測試與人工功能測試
+- 原有 v0.7.0 的 63 項測試保留；候選版新增健康檢查與備份驗證測試各一項（另外同步更新既有 SQLite HTTP 版本斷言）。
+- 使用者 Windows PowerShell 截圖證實 `npm test`：**tests 65、pass 65、fail 0、skipped 0**，耗時約 **727.9364 ms**。
+- `npm start` 正常輸出 `Quiz Arena v1.0.0-rc.1` 與 `http://127.0.0.1:3000/`、`/api/health`；開發者回報整體遊戲操作正常。
+- 測試覆蓋不代表已完成手機／其他瀏覽器、無障礙、壓力、資安、公開部署及所有網路邊界測試；這些仍需依 `docs/RELEASE_CANDIDATE_CHECKLIST.md` 驗收。
+
+### 五、第十八筆提交及狀態檢查
+- PowerShell 中 `git push origin main` 回報 `d51b261..bcaf0b3 main -> main`，`git log -3 --oneline` 顯示 `bcaf0b3 (HEAD -> main, origin/main, origin/HEAD)`，確認遠端同步。
+- Git 狀態僅剩未追蹤的 `STAGE2_README.txt`；`data/`、`backups/` 不出現在待提交清單，符合資料保護目標。
+- 第十九筆 README、CHANGELOG、DEVLOG 文件更新準備獨立提交；在使用者確實建立前**不填入虛構 SHA**。
+
+### 六、候選版與正式版的界線
+- 已完成：核心功能、65 項本機測試、SQLite 完整性檢查、備份、基本遊戲操作回報、第十八筆 GitHub 提交。
+- 尚待：備份可還原性實測、完整人工驗收清單、正式版本定稿、`v1.0.0` Git Tag／Release；若要部署至公開網路，仍須額外完成身分驗證、濫用防護及資安審查。
+- 本 Session 定位為**Release Candidate**，不是「v1.0.0 已經正式發布」。
+
+### 文件增量更新說明（2026-10-19）
+- 延續先前 Session 00–09，追加 Session 10；保留原始歷史觀察與限制，讓 Git 歷史能真實反映專案演變。
+- README 新增候選版操作方法、備份工具、測試證據及最新 Roadmap；CHANGELOG 在 v0.7.0 章節之前新增獨立 `[1.0.0-rc.1]` 紀錄。
+- 後續正式版驗收完成後，應另增正式發行紀錄，不得將此候選版事後重新命名為已通過的正式版。
+

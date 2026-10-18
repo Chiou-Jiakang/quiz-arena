@@ -2,12 +2,40 @@
 
 本文件依**開發里程碑**記錄真正已發生的變更，而非每次編輯的流水帳。具體工作流程、測試操作及問題追蹤詳見 [DEVLOG](docs/DEVLOG.md)。日期採專案實際開發紀錄；版本標題**不代表已建立 GitHub Release 或 Git Tag**。
 
-## [Unreleased] — 後續規劃
+## [Unreleased] — 正式 v1.0.0 驗收與發行準備
 
 ### Planned
-- v0.7.0：完成排行榜、歷史成績介面與品質強化，修正健康檢查版本字串。
-- v1.0.0：完成跨瀏覽器及端到端驗收、資料備份策略、部署安全與正式發布準備。
-- v1.0.0：完整 MVP 整合驗收與發布準備；仍需完成安全、資料審核和備份／還原評估。
+- 依 `docs/RELEASE_CANDIDATE_CHECKLIST.md` 完成候選版人工驗收：限時、離線同步、排行榜、手機／鍵盤操作與題庫 HTTP 隔離。
+- 進行備份檔獨立還原與資料一致性演練；確認 Git 工作樹、資料庫排除規則及正式發行文件。
+- 正式驗收通過後才更新至 `v1.0.0`、建立 Git Tag／Release；公開網路部署尚需認證、濫用防護與資安審查。
+
+## [1.0.0-rc.1] — 2026-10-19（正式版候選／品質驗收里程碑）
+
+### Added
+- 新增 `scripts/check-db.mjs` 與 `npm run db:check`：唯讀檢查 SQLite 完整性、Schema 版本、必要資料表與場次／成績數量；可指定資料庫路徑以檢查備份。
+- 新增 `scripts/backup-db.mjs` 與 `npm run db:backup`：透過 SQLite Online Backup API 產生獨立備份，並檢查備份資料庫完整性，適用於 WAL 模式。
+- 增加 `tests/release-health.test.mjs`、`tests/release-backup.test.mjs`，並建立 `docs/RELEASE_CANDIDATE_CHECKLIST.md` 作為人工驗收依據。
+
+### Changed
+- 將 `package.json`／`package-lock.json`、前端版本文字、啟動訊息及 `/api/health` 統一為 `v1.0.0-rc.1`。
+- 修改 `tests/api-sqlite-http.test.mjs` 中 SQLite 健康檢查的舊版預期；修正「程式已是新版本，健康檢查仍顯示 v0.5.0」的歷史問題。
+- 擴充 `.gitignore` 以排除本機 `data/` 與 `backups/`，保護執行資料及備份，避免意外加入 Git。
+- 本次僅修改發布品質相關程式、工具與文件；保留 v0.7.0 的答題、排行榜、歷史成績 API 與 SQLite 資料結構。
+
+### Tested
+- 2026-10-19 開發者提供 Windows 本機輸出：**`tests 65`、`pass 65`、`fail 0`、`skipped 0`**（約 727.94 ms）。
+- `npm run db:check`：`valid: true`、`schemaVersion: "1"`、`games: 2`、`results: 2`；`npm run db:backup` 已產生備份且工具回報完整性正常。
+- `npm start` 成功顯示 `v1.0.0-rc.1` 伺服器本機入口；開發者確認瀏覽器遊戲操作沒有發現問題。
+- Git 檢查與推送：第十八筆功能 Commit `bcaf0b3` 已推送 `origin/main`；剩餘未追蹤的 `STAGE2_README.txt` 未納入版本控管。
+
+### Known Limitations
+- 候選版測試及備份成功，不等於備份已完成實際還原演練；獨立還原、跨裝置、鍵盤無障礙、壓力與併發操作尚待逐項確認。
+- 尚無使用者認證、對外服務濫用防護、正式授權或完整資安稽核。本版適用本機練習，不應宣稱可直接安全公開部署。
+- 目前**尚未**建立正式 `v1.0.0` Git Tag 或 GitHub Release。
+
+### Related Commit
+- [`bcaf0b3`](https://github.com/Chiou-Jiakang/quiz-arena/commit/bcaf0b3) — `feat: prepare v1.0.0 release candidate with database validation and backup`（第十八筆）。
+- 第十九筆文件更新待使用者建立並推送；未產生前不預先記錄 SHA。
 
 ## [0.7.0] — 2026-10-19（排行榜與歷史成績里程碑）
 
