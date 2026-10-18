@@ -252,6 +252,94 @@ node --test tests/*.test.mjs
 
 ---
 
+## 2026-10-18｜Session 06：v0.4.0 Express REST API 與伺服器端場次驗收
+
+### 一、開發目標與版本邊界
+由 v0.3.0 的純前端限時問答逐步過渡到真正的全端系統。本階段優先建立**可獨立啟動及測試的後端 API**，把場次狀態、答題截止時間和計分規則移入服務層；為降低回歸風險，暫時不修改現有可運作的前端遊戲。
+
+**里程碑範圍：** v0.4.0 建立 Express REST API 與暫存於記憶體的場次；v0.5.0 導入 SQLite，v0.6.0 才正式將網頁切換成透過 API 遊玩。因此本階段不能宣稱「已完成前後端整合」或「已具完整防作弊」。
+
+### 二、程式碼與目錄變更
+
+| 檔案／目錄 | 本次用途 |
+| --- | --- |
+| `package.json` | 設定 ES Modules、Node.js >= 20、Express 依賴及 `start`、`dev`、`test` 腳本 |
+| `package-lock.json` | 記錄套件解析與鎖定依賴，利於日後重新安裝 |
+| `server/index.mjs` | 讀取題庫、建立服務，並監聽本機 `127.0.0.1:3000` |
+| `server/app.mjs` | 設定 Express JSON 路由、狀態碼、錯誤格式與 16 KB Body 上限 |
+| `server/game-service.mjs` | 不依賴 HTTP 的場次管理、題目抽取、截止時間、答案驗證與計分 |
+| `tests/api-service.test.mjs` | 11 項伺服器核心邏輯及邊界測試 |
+| `tests/api-http.test.mjs` | 5 項實際 HTTP 請求／回應合約測試 |
+| `docs/API_DESIGN.md` | 記錄端點、場次階段、JSON 契約與限制 |
+
+原有 `public/` 前端、四種前端測試及 v0.1.0–v0.3.0 歷史文件在功能 Commit 中未更改，繼續作為回歸基準。
+
+### 三、API 設計與伺服器端遊戲流程
+
+**HTTP 端點**
+
+| HTTP | 路徑 | 功能 |
+| --- | --- | --- |
+| `GET` | `/api/health` | 回傳 `status`、版本與儲存方式 |
+| `GET` | `/api/config` | 公開類別、難度、題數、時限與計分規則 |
+| `POST` | `/api/games` | 驗證 `{player, category, difficulty}`，建立 UUID 場次及第一題 |
+| `GET` | `/api/games/:id` | 查看場次狀態，依階段提供當前題目、回饋或結算 |
+| `POST` | `/api/games/:id/answers` | 接收 `{chosenIndex}`（0–3），檢查期限及判分 |
+| `POST` | `/api/games/:id/next` | 僅於回饋階段進入下一題；第十題後返回完成結果 |
+
+`game-service.mjs` 以 `Map` 保存場次，具備 `answering`、`feedback`、`finished` 三個階段。建立時依類別與難度抽十道不重複題目，使用 `randomUUID()` 產生場次 ID，設定每題 `deadlineAt = now() + 20_000`。在作答或讀取狀態時檢查伺服器時間；逾時則記錄 `chosenIndex: null`、`timedOut: true`、得分不變，進入回饋狀態。正常答對加 100，答錯加 0，不接受重複提交。
+
+在 `answering` 階段的 API 回應，題目只公開 `id`、`question`、`options`、`category`、`difficulty`，不附正解索引或解析；提交之後的 `feedback` 才回傳正解及解析。完整十題後，`result` 包含總分、答對題數、逾時題數、正確率及逐題回顧。
+
+**錯誤處理及暫存策略**
+- 非法設定或選項使用 `400`；未知場次使用 `404`；階段不符、重複提交或逾時補交使用 `409`；題庫不足可回傳 `422`；容量達上限可回傳 `503`。
+- API 使用統一格式 `{"error":{"code":"...","message":"..."}}`，對格式錯誤 JSON 和過大請求也有對應回應。
+- 預設最多 500 個記憶體場次；最後互動超過 1 小時的場次，於後續服務操作時被清理。**不是定時背景清除，也不是資料庫。**
+
+### 四、本機安裝與驗證證據
+
+**工作環境：** Windows、VS Code、PowerShell、Node.js/npm；使用先前可正常運作的 v0.3.0 專案作為升級基底。新增程式透過 v0.4.0 安裝包加入，原有前端未被覆蓋。
+
+先於專案根目錄執行 `npm install`，再執行：
+
+```powershell
+npm test
+```
+
+**開發者提供的測試畫面結果：** `tests 40`、`pass 40`、`fail 0`、`cancelled 0`、`skipped 0`。組成如下：原有題庫／單機遊戲 14 項、計時／逾時 10 項、API 場次服務 11 項、HTTP 路由整合 5 項。測試使用 Node.js 內建 `node:test`，HTTP 整合測試需 Express 安裝成功。
+
+再執行：
+
+```powershell
+npm start
+```
+
+終端機顯示 `Quiz Arena v0.4.0 API: http://127.0.0.1:3000/api/health`，並提示資料只存於記憶體。瀏覽器實際開啟該端點，得到：
+
+```json
+{"status":"ok","version":"v0.4.0","persistence":"memory"}
+```
+
+**驗收界線：** 40 項既定測試與健康檢查通過，支持本機獨立 API 運作；尚不能證明部署安全、實際多人同時使用性能，或瀏覽器遊戲已經改走後端 API。
+
+### 五、設計上的取捨與待解問題
+- **前後端暫時分離：** `npm start` 提供後端 HTTP API，既有頁面仍由 Python HTTP Server 提供並在瀏覽器判分。這是分階段交付，不是遺漏啟動步驟。
+- **公開題庫風險：** API 回應在作答前不洩漏正解，但 `public/data/questions.json` 本身仍可公開下載；v0.6.0 正式串接前應重新設計題庫來源與前端資料流。
+- **持久化不足：** 記憶體 `Map` 的場次在伺服器重啟後消失；須於 v0.5.0 引入 SQLite Schema、約束、初始化與儲存層測試。
+- **錯誤與安全：** 尚未完成正式部署權限、負載限制、跨來源整合及可用性評估；題庫內容亦須後續逐題審校。
+- **進度指標：** v0.1.0、v0.2.0、v0.3.0、v0.4.0 四個功能里程碑已完成；後續 v0.5.0–v1.0.0 尚待開發，里程碑數量不是工時完成比例。
+
+### 六、GitHub 與版本管理
+- 本階段功能 Commit：[`3506200`](https://github.com/Chiou-Jiakang/quiz-arena/commit/3506200) — `feat: implement Express REST API and server-side game sessions`。
+- 開發者已於 GitHub 主頁確認 Repo 顯示 **10 Commits**，並看到 `server/`、`tests/`、`package.json`、`package-lock.json` 及 API 文件更新。
+- 本次 README、CHANGELOG、DEVLOG 的 v0.4.0 文件增補預定作為**第十一筆** `docs:` Commit，實際 SHA 在提交成功前不預填。
+- 本機原有 `STAGE2_README.txt` 屬未追蹤的舊安裝說明，不應加入正式 v0.4.0 文件 Commit；`node_modules/` 不納入 Git，而 `package-lock.json` 已隨功能 Commit 提交。
+
+### 七、下次開發安排
+進入 **v0.5.0 SQLite 與 CRUD**：制定資料表 Schema 與索引、匯入／驗證題庫、設計後端儲存層、處理連續寫入與狀態一致性，並補充資料庫初始化、持久化、重啟及錯誤情境測試。完成後進入 v0.6.0，將前端遊戲與受伺服器控制的場次及答案驗證正式串接。
+
+---
+
 ## 文件與版本治理備註（截至 2026-10-18）
 
 - README 整合 v0.1.0 與 v0.2.0 的**仍有效內容**，作為最新專案入口；不另外保存多份主要 README。
@@ -259,3 +347,5 @@ node --test tests/*.test.mjs
 - v0.2.0 當時稱為「完成前端單機問答里程碑」；目前已進入 v0.3.0 的「前端限時問答里程碑」。這些均**不是完整 MVP 或 GitHub Release**。
 - 本次整理文件不更動 PRD 的 MVP 核心規格，也不修改遊戲功能程式碼。
 - v0.3.0 README／CHANGELOG／DEVLOG 以此原始日誌為基底累積；不刪除 Session 00–04 的實際紀錄。
+
+- v0.4.0 已完成獨立 Express REST API 與 40 項測試，但與現有前端尚未整合；第十筆功能 Commit 為 `3506200`。這筆文檔更新只增加 Session 06 與上述版本說明，前面的 Session 00–05 仍完整保留。

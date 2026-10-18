@@ -1,14 +1,14 @@
 # Quiz Arena｜知識競技場
 
-> **目前開發里程碑：v0.3.0 — Quiz Timer System**
-> **狀態：前端單機遊戲可操作；完整全端 MVP 尚在開發中**
+> **目前開發里程碑：v0.4.0 — Express REST API & Server-Side Game Sessions**
+> **狀態：v0.3.0 前端遊戲及 v0.4.0 獨立後端 API 均可運作；兩者尚未串接，完整 MVP 仍在開發中**
 > **最後文件更新：2026-10-18**
 
 Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家輸入暱稱、選擇知識類別與難度後，即可進行十題四選一挑戰，查看答題回饋、得分和逐題結果。介面採深色科技競技場風格，並以響應式設計兼顧桌面與手機操作。
 
 本專案採用 **AI-Assisted Development × Iterative Development**：由 AI 協助產生與調整程式碼，再進行本機執行、功能測試、問題修正、Code Review 與 Git 版本紀錄。每個里程碑保留對應的程式碼、測試與中文開發文件。
 
-**重要區別：** v0.3.0 已具備每題 20 秒倒數及逾時處理，仍是「可玩的前端單機版本」，**不是**完整全端 MVP；後端截止時間／答案驗證、SQLite 持久化與排行榜尚未實作。
+**重要區別：** v0.4.0 已建立可獨立啟動的 Express REST API，能在伺服器端管理場次、20 秒期限與答案計分；**但現有瀏覽器遊戲仍使用 v0.3.0 的前端題庫與計分，尚未呼叫後端 API**。公開的 `public/data/questions.json` 仍含正解，因此不具完整防作弊能力；SQLite、排行榜及正式前後端整合亦尚未實作。
 
 ---
 
@@ -24,20 +24,22 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 
 ## 2. 遊戲規則：目標規格與目前狀態
 
-| 項目 | MVP 規格 | v0.3.0 現況 |
+| 項目 | MVP 規格 | v0.4.0 現況 |
 | --- | --- | --- |
 | 遊戲模式 | 單人問答、免註冊暱稱 | 已實作 |
 | 題目數量 | 每局 10 題且不可重複 | 已實作 |
 | 題目形式 | 每題四選一 | 已實作 |
 | 類別 | 綜合知識、科技、科學、歷史、地理 | 已實作 |
 | 難度 | 簡單、中等、困難 | 已實作 |
-| 每題限時 | 20 秒，逾時視為答錯 | **前端已實作**：截止時間判斷、時間到自動記錄；尚無伺服器驗證 |
-| 計分 | 答對 +100；答錯或逾時 +0 | **前端已實作**：正確、錯誤、逾時三種結果 |
+| 每題限時 | 20 秒，逾時視為答錯 | 前端倒數及獨立後端期限判定皆已實作，尚未串接 |
+| 計分 | 答對 +100；答錯或逾時 +0 | 前端及獨立 API 均能判定與計分；瀏覽器尚未使用後端得分 |
 | 滿分 | 1,000 分 | 已實作 |
 | 作答回饋 | 正誤、正解及解析 | 已實作 |
 | 完成結算 | 總分、答對率、逐題回顧 | 已實作（瀏覽器記憶體） |
 | 歷史成績 | SQLite 儲存，重啟可查 | 尚未實作 |
 | 排行榜 | 已完成場次前 10 名 | 尚未實作 |
+| 後端 API | 建立遊戲／提交作答／查詢狀態 | **已獨立實作** Express REST API，前端尚未串接 |
+| 場次資料 | 可跨伺服器重啟保存的正式紀錄 | **僅後端記憶體 Map 暫存**；重啟遺失 |
 
 完整功能及驗收基準以 [PRD](docs/PRD.md) 為準；本表描述實作進度，不代表 PRD 所有驗收條件已通過。
 
@@ -100,6 +102,27 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 
 詳細技術取捨與人工驗收項目請參閱 [計時系統設計](docs/TIMER_DESIGN.md)。
 
+### v0.4.0 — 獨立 Express REST API 與伺服器端場次（2026-10-18）
+
+**後端架構與資料契約**
+- 新增 Node.js／Express 5 後端，以 `server/index.mjs` 啟動本機 HTTP 服務、`server/app.mjs` 定義路由及統一 JSON 錯誤格式、`server/game-service.mjs` 實作不依賴 HTTP 的場次核心邏輯。
+- 新增 `package.json` 與 `package-lock.json` 以管理依賴與可重現安裝；支援 `npm install`、`npm test`、`npm start` 及 `npm run dev`（Node.js >= 20）。
+- 提供 `GET /api/health`、`GET /api/config`、`POST /api/games`、`GET /api/games/:id`、`POST /api/games/:id/answers`、`POST /api/games/:id/next`，共六個端點。
+- 正式作答前的 API 題目只包含題幹、選項、題目 ID、類別和難度，不含正確索引及解析；送出答案後才回傳回饋。
+
+**伺服器端規則與保護**
+- 使用 UUID 建立場次 ID，十題不重複；每題在伺服器端設定 20,000 毫秒截止時間，作答時以伺服器時鐘驗證。逾時未答計 0 分，正確作答加 100 分，禁止重複提交或跳過未完成題目。
+- HTTP 錯誤以 `{ "error": { "code", "message" } }` 回傳，區分不合法輸入、場次不存在、重複提交、題庫不可用及容量限制等狀況；JSON Body 限制 16 KB。
+- 場次暫存在後端 `Map`，預設最多 500 場，依最後互動時間進行 1 小時逾期清理；**不持久化**、重新啟動即遺失。
+- API 綁定 `127.0.0.1`，定位為本機練習環境，尚未提供部署安全、登入、資料庫或排行榜。
+
+**本機驗收與工程邊界**
+- 在既有 24 項測試之外，新增 11 項伺服器場次服務測試及 5 項 HTTP 合約測試，開發者於 Windows／VS Code 執行 `npm test`，**40 項通過、0 項失敗**。
+- 開發者執行 `npm start` 並於瀏覽器開啟 `http://127.0.0.1:3000/api/health`，收到 `status: ok`、`version: v0.4.0`、`persistence: memory`。
+- 本里程碑**尚未把前端 `app.js` 接到 API**，目前 v0.3.0 前端遊戲繼續透過公開 JSON 運作；雖然 API 答題前不洩漏答案，現有靜態題庫仍公開正解，不能宣稱整體遊戲已具有防作弊能力。
+
+更多端點、JSON 欄位、HTTP 狀態與限制參閱 [API 設計文件](docs/API_DESIGN.md)。
+
 ## 4. 技術架構與模組責任
 
 | 層級／工具 | 技術 | 目前狀態與責任 |
@@ -110,14 +133,16 @@ Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家
 | 題庫及抽題 | JSON + `quiz-data.mjs` | 已使用；資料驗證、類別難度篩選、洗牌 |
 | 遊戲邏輯 | `quiz-engine.mjs` | 已使用；作答、逾時狀態、計分、進度、結算 |
 | 題目計時 | `quiz-timer.mjs` / `performance.now()` | 已使用；20 秒截止判定、倒數回呼與計時器清理 |
-| 自動化測試 | Node.js `node:test` | 已使用；題庫及遊戲邏輯單元測試 |
-| 後端 | Node.js / Express | 規劃中；正式 API、場次與答案驗證 |
+| 自動化測試 | Node.js `node:test` | 已使用；前端、伺服器端場次與 HTTP 合約測試 |
+| 後端 | Node.js / Express 5 | 已建立獨立 API，管理場次、輸入驗證、後端截止時間與計分；前端尚未串接 |
 | 資料庫 | SQLite | 規劃中；題庫、答題歷史、成績持久化 |
 | 版本與文件 | VS Code / Git / GitHub | 已使用；提交、測試與迭代紀錄 |
 
-**目前資料流（前端原型）：** 設定表單 → `fetch()` 讀取 JSON → 題庫過濾與抽題 → 每題建立截止時間 → 玩家作答或逾時 → 遊戲邏輯判定 → DOM 更新 → 暫存結算結果。
+**現有前端資料流（維持 v0.3.0）：** 設定表單 → `fetch()` 讀取公開 JSON → 前端抽題 → 瀏覽器計時／判分 → 畫面更新與記憶體結算。
 
-**目標資料流（完整 MVP）：** 瀏覽器 → HTTP / JSON → Express API → SQLite；由後端控制正式場次、截止時間、正確答案與分數，避免信任前端自行提交的總分。**目前沒有後端 API**，請勿將本機 `http.server` 當作 Express。
+**新增獨立 API 資料流（v0.4.0）：** HTTP JSON 請求 → Express 路由 → `game-service.mjs` 驗證及管理 `Map` 場次 → 回傳題目或結果；未提供瀏覽器介面串接。
+
+**目標資料流（完整 MVP）：** 瀏覽器 → HTTP / JSON → Express API → SQLite。仍須把既有前端切換為使用 API，將公開正解題庫移出靜態可存取位置，並在 SQLite 落實資料持久化；目前 Python `http.server` 與 Express 是兩個分開啟動的服務。
 
 ## 5. 專案目錄
 
@@ -138,13 +163,22 @@ quiz-arena/
 │   ├── quiz-data.test.mjs        # 題庫及抽題測試
 │   ├── quiz-engine.test.mjs      # 單機遊戲邏輯測試
 │   ├── quiz-timer.test.mjs       # 題目計時器測試
-│   └── quiz-timeout.test.mjs     # 遊戲逾時狀態測試
+│   ├── quiz-timeout.test.mjs     # 遊戲逾時狀態測試
+│   ├── api-service.test.mjs      # 後端場次與規則測試
+│   └── api-http.test.mjs         # Express HTTP 合約測試
 ├── docs/
 │   ├── PRD.md                    # MVP 需求與驗收標準
 │   ├── DEVLOG.md                 # 逐次開發日誌
 │   ├── QUESTION_BANK_DESIGN.md   # 題庫格式與限制
 │   ├── STAGE2_IMPLEMENTATION.md  # Stage 2 技術說明
-│   └── TIMER_DESIGN.md           # v0.3.0 計時設計
+│   ├── TIMER_DESIGN.md           # v0.3.0 計時設計
+│   └── API_DESIGN.md             # v0.4.0 API 路由、資料契約與限制
+├── server/
+│   ├── index.mjs                 # 啟動 API、載入題庫及監聽本機埠
+│   ├── app.mjs                   # Express 路由與 JSON 錯誤處理
+│   └── game-service.mjs          # 場次生命週期、伺服器計時、答題計分
+├── package.json                # Express 依賴、啟動與測試指令
+├── package-lock.json           # npm 鎖定依賴版本
 ├── README.md
 ├── CHANGELOG.md
 └── .gitignore
@@ -156,7 +190,7 @@ quiz-arena/
 
 - Windows、macOS 或 Linux；建議使用最新穩定版 Edge 或 Chrome。
 - Python 3：用於啟動靜態 HTTP 伺服器。
-- Node.js：用於執行內建測試，不是本階段遊戲後端。
+- Node.js **20 以上版本**及 npm：安裝／執行 Express、測試與後端服務。
 - VS Code 與 Git：建議用於開發及版本管理。
 
 ### 啟動網站
@@ -172,7 +206,36 @@ quiz-arena/
 4. 點擊「開始挑戰」，輸入暱稱、選擇類別和難度，進入十題問答；每題自動倒數 20 秒，逾時記為 0 分。完成後可查看結果並重玩。
 5. 以 `Ctrl + C` 停止伺服器。
 
-**注意：** 使用 HTTP 伺服器而非直接開啟 `index.html` 的 `file://` 路徑，因為本版本使用 ES Modules 與 `fetch()` 讀取 JSON。若 5500 埠已被使用，請停止佔用程序或改用其他埠，並開啟對應網址。前端版本無需執行 `npm install` 或啟動 Express。
+**注意：** 使用 HTTP 伺服器而非直接開啟 `index.html` 的 `file://` 路徑，因為前端使用 ES Modules 與 `fetch()` 讀取 JSON。若 5500 埠被佔用，可改用其他埠。**本節啟動的是前端示範遊戲，與下方 Express API 分開，並不會自動串接。**
+
+### 安裝並啟動 v0.4.0 Express 後端
+
+在專案根目錄執行（首次使用或更新依賴後）：
+
+```powershell
+npm ci
+npm test
+npm start
+```
+
+- 使用瀏覽器測試健康檢查：`http://127.0.0.1:3000/api/health`。
+- 預期 JSON：`{"status":"ok","version":"v0.4.0","persistence":"memory"}`。
+- 其他 API 端點須使用合適的 HTTP 方法與 JSON Body；**不能只用網址列測試 POST**。詳細範例與回傳資料見 [API_DESIGN.md](docs/API_DESIGN.md)。
+- 可使用 `npm run dev` 啟動 watch 模式；依設定，伺服器只監聽本機 `127.0.0.1:3000`（可透過環境變數 `PORT` 調整）。
+- 按 `Ctrl + C` 停止服務。**重啟後所有暫存場次會消失**，目前不提供資料庫。
+
+### v0.4.0 API 速查
+
+| 方法 | 端點 | 用途 |
+| --- | --- | --- |
+| `GET` | `/api/health` | 健康檢查、版本與儲存模式 |
+| `GET` | `/api/config` | 公開類別、難度、題數、時間與分數設定 |
+| `POST` | `/api/games` | 依暱稱、類別、難度建立場次，取得第一題 |
+| `GET` | `/api/games/:id` | 讀取場次目前狀態與可公開題目／回饋 |
+| `POST` | `/api/games/:id/answers` | 提交選項索引，伺服器驗證期限與正確性 |
+| `POST` | `/api/games/:id/next` | 作答／逾時後進入下一題，或完成結算 |
+
+建立場次的 Body 例如：`{"player":"玩家","category":"technology","difficulty":"easy"}`；提交答案的 Body 例如：`{"chosenIndex":1}`。成功建立場次回傳 `201`，其餘主要成功查詢與操作回傳 `200`；錯誤由 HTTP 狀態與 `error.code` 辨識。
 
 ### 執行自動化測試
 
@@ -189,9 +252,11 @@ node --test tests/quiz-data.test.mjs
 node --test tests/quiz-engine.test.mjs
 node --test tests/quiz-timer.test.mjs
 node --test tests/quiz-timeout.test.mjs
+node --test tests/api-service.test.mjs
+node --test tests/api-http.test.mjs
 ```
 
-目前 v0.3.0 的完整驗收紀錄是 `tests 24`、`pass 24`、`fail 0`；其中 v0.2.0 的 14 項仍保留並持續執行。單元測試不能取代瀏覽器操作、跨裝置及伺服器安全測試。
+v0.3.0 的歷史驗收為 `tests 24`、`pass 24`、`fail 0`；v0.4.0 加入 16 項後端測試後，開發者於本機執行 `npm test` 得到 **`tests 40`、`pass 40`、`fail 0`**。HTTP 整合測試需先安裝 Express 依賴；自動化測試不能取代完整手動操作、部署安全或多裝置驗收。
 
 ## 7. 測試與品質狀態
 
@@ -204,8 +269,11 @@ node --test tests/quiz-timeout.test.mjs
 | v0.3.0 計時器 | 6 項截止時間、背景延遲、停止與重啟等單元測試 | 6 / 6 通過 |
 | v0.3.0 逾時流程 | 4 項未作答、重複提交、分數與結果混合測試 | 4 / 4 通過；全專案合計 24 / 24 |
 | v0.3.0 瀏覽器 | 開發者回報倒數、逾時、換題與重玩操作正常 | 人工驗收回報；尚非跨瀏覽器或安全測試 |
+| v0.4.0 場次服務 | 11 項伺服器端場次、逾時、驗證、限制與結算測試 | 11 / 11 通過 |
+| v0.4.0 HTTP API | 5 項路由合約、狀態碼與錯誤回應整合測試 | 5 / 5 通過；累計 **40 / 40** |
+| v0.4.0 本機手動 | `npm start` 及 `/api/health` | 實際回傳 `status: ok`、`version: v0.4.0`、`persistence: memory` |
 
-**仍待驗證／改善：** 正式伺服器端截止時間判定與防作弊、持久化、API 失敗與網路不穩時的處理、正式資料正確性、可及性、不同瀏覽器／裝置，以及系統化 E2E 測試。前端計時測試通過不等於「100% 無 Bug」。
+**仍待驗證／改善：** 瀏覽器尚未改接伺服器 API；靜態前端題庫仍公開正解，因此沒有整體防作弊保證；亦缺少 SQLite 持久化、排行榜、部署安全、負載測試、跨瀏覽器／裝置驗收及系統化 E2E 測試。40 項通過僅代表既定案例符合預期，不等於「100% 無 Bug」。
 
 ## 8. Roadmap（漸進式里程碑）
 
@@ -215,7 +283,7 @@ node --test tests/quiz-timeout.test.mjs
 | v0.2.0 Stage 1 | 120 題題庫、驗證與抽題 | 已完成 |
 | v0.2.0 Stage 2 | 單人十題問答、計分及結算 | 已完成 |
 | v0.3.0 | 20 秒倒數、逾時判定與計時狀態清理 | 已完成（前端） |
-| v0.4.0 | Node.js / Express REST API | 待開發 |
+| v0.4.0 | Node.js / Express REST API、伺服器端場次、期限及計分 | 已完成（獨立 API；尚未整合前端） |
 | v0.5.0 | SQLite 題庫、成績與 CRUD | 待開發 |
 | v0.6.0 | 後端驗證、API 與前端正式整合 | 待開發 |
 | v0.7.0 | 排行榜、錯誤處理與品質強化 | 待開發 |
@@ -242,6 +310,7 @@ node --test tests/quiz-timeout.test.mjs
 - [題庫設計及抽題規則](docs/QUESTION_BANK_DESIGN.md)
 - [v0.2.0 Stage 2 技術實作](docs/STAGE2_IMPLEMENTATION.md)
 - [v0.3.0 計時器與逾時設計](docs/TIMER_DESIGN.md)
+- [v0.4.0 REST API 契約與場次設計](docs/API_DESIGN.md)
 
 ## 11. 最近開發更新
 
@@ -254,16 +323,20 @@ node --test tests/quiz-timeout.test.mjs
 | 2026-10-18 | v0.2.0 Stage 2：遊戲流程、計分、結算及測試 | [`7cc94e2`](https://github.com/Chiou-Jiakang/quiz-arena/commit/7cc94e2) |
 | 2026-10-18 | 合併 v0.1.0–v0.2.0 中文文件歷程 | [`9288af8`](https://github.com/Chiou-Jiakang/quiz-arena/commit/9288af8) |
 | 2026-10-18 | v0.3.0 20 秒計時、逾時處理與 24 項測試 | [`78e6ecf`](https://github.com/Chiou-Jiakang/quiz-arena/commit/78e6ecf) |
+| 2026-10-18 | v0.3.0 文件累積更新 | [`2c01fd9`](https://github.com/Chiou-Jiakang/quiz-arena/commit/2c01fd9) |
+| 2026-10-18 | v0.4.0 獨立 Express API、伺服器場次、40 項測試 | [`3506200`](https://github.com/Chiou-Jiakang/quiz-arena/commit/3506200) |
 
 最新文件更新的 Commit 將於成功提交後出現在 Git 歷史中；本文件不預先填寫尚未產生的 SHA。
 
-## 12. 下一階段：v0.4.0
+## 12. 下一階段：v0.5.0
 
-下一階段將建立 **Node.js / Express REST API**，逐步從前端示範流程切換至後端控制遊戲場次、題目存取及錯誤回應。後續 v0.5.0 再整合 SQLite，v0.6.0 落實由伺服器驗證正確答案、作答截止時間和成績。相關 API 規格應先確認資料契約與錯誤格式，再新增整合測試。
+下一階段將在現有 Express 場次邏輯上加入 **SQLite 資料庫、Schema、初始化／種子資料、CRUD 與資料一致性測試**；應設計清楚服務層與儲存層界線，保留 v0.4.0 的 API 合約測試。v0.6.0 再把瀏覽器遊戲正式切換至後端 API，停止向玩家公開含正解的前端題庫；v0.7.0 加入排行榜及品質優化。
 
 ---
 
 **Repository：** https://github.com/Chiou-Jiakang/quiz-arena
-**Current Milestone：** v0.3.0（Timed Frontend Prototype）
+
+**Current Milestone：** v0.4.0（Timed Frontend + Standalone Express API）
 **Project Status：** Active Development
+
 **Last Updated：** 2026-10-18

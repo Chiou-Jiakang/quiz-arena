@@ -5,8 +5,34 @@
 ## [Unreleased] — 後續規劃
 
 ### Planned
-- v0.4.0：建立 Node.js / Express REST API，確立遊戲場次與 API 資料契約。
-- v0.5.0 及後續：SQLite、後端答案與截止時間驗證、排行榜及完整 MVP 驗收。
+- v0.5.0：建立 SQLite Schema、題庫／場次／成績持久化及資料操作測試。
+- v0.6.0：前後端正式串接 API，將公開前端正解移至受保護後端來源。
+- v0.7.0 與 v1.0.0：排行榜、品質改善與 MVP 整合驗收。
+
+## [0.4.0] — 2026-10-18（獨立 Express REST API 里程碑）
+
+### Added
+- 引入 Node.js / Express 5，新增 `package.json`、`package-lock.json` 與 `server/`，提供 `npm start`、`npm run dev`、`npm test`。
+- 新增六個 REST 端點：健康檢查、遊戲設定、建立場次、查詢場次、提交答案、前進下一題。
+- 新增 `game-service.mjs`，集中驗證玩家設定、十題抽取、唯一場次 ID、20 秒截止時間、答題與結算。
+- 伺服器在作答前不回傳 `correctIndex` 或解析；作答後才提供正確答案與回饋。接受選項索引而不是客戶端自訂分數。
+- 新增防重複提交、期限到達後記錄逾時 0 分、進度階段驗證與 HTTP 結構化錯誤回傳。
+- 記憶體內場次上限預設 500，按互動逾期一小時清理；JSON Body 大小限制為 16 KB。
+- 新增 `tests/api-service.test.mjs`（11 項）、`tests/api-http.test.mjs`（5 項）與 `docs/API_DESIGN.md`。
+
+### Tested
+- 在原有 24 項測試基礎上新增 16 項，開發者於 Windows／VS Code 執行 `npm test`，結果 **40 passed、0 failed**。
+- 在本機執行 `npm start`，並實際以瀏覽器開啟 `/api/health`，收到 `status: ok`、`version: v0.4.0`、`persistence: memory`。
+- 端點交互有 HTTP 自動化測試；尚無整套瀏覽器 UI ↔ API 的端到端驗收，因前端尚未整合。
+
+### Known Limitations
+- 既有前端仍使用公開的 `public/data/questions.json` 與瀏覽器計分；**未連線至本階段 API**。
+- API 在尚未作答時隱藏正解，但靜態前端題庫仍包含正解；因此整個專案**不具正式防作弊能力**。
+- 伺服器場次儲存在記憶體，重啟會消失；SQLite、歷史成績、排行榜及資料庫 CRUD 未完成。
+- API 目前只監聽本機位址；未建立正式身分驗證、部署強化與效能保證。題庫敘述仍待逐題內容審校。
+
+### Related Commit
+- [`3506200`](https://github.com/Chiou-Jiakang/quiz-arena/commit/3506200) — `feat: implement Express REST API and server-side game sessions`
 
 ## [0.3.0] — 2026-10-18（前端限時問答里程碑）
 
