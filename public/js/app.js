@@ -1,5 +1,6 @@
 import { drawQuestions, validateQuestionBank } from './quiz-data.mjs';
-import { createGame, submitAnswer, advanceGame, summarizeGame } from './quiz-engine.mjs';
+import { createGame, submitAnswer, submitTimeout, advanceGame, summarizeGame } from './quiz-engine.mjs';
+import { createQuestionTimer, QUESTION_SECONDS } from './quiz-timer.mjs';
 
 const $ = selector => document.querySelector(selector);
 const views = { home: $('#home-view'), setup: $('#setup-view'), play: $('#play-view'), result: $('#result-view') };
@@ -8,6 +9,39 @@ const message = $('#form-message');
 const bankUrl = new URL('../data/questions.json', import.meta.url);
 let bankPromise;
 let game = null;
+let timer = null;
+// Generation guards prevent an old async fetch/retry from reviving an abandoned game.
+let gameGeneration = 0;
+
+function stopTimer() {
+  if (timer) { timer.stop(); timer = null; }
+}
+
+function paintTimer(seconds, ratio) {
+  $('#timer-seconds').textContent = `${seconds} 秒`;
+  $('#timer-seconds').setAttribute('aria-label', `剩餘 ${seconds} 秒`);
+  $('#timer-progress-bar').style.width = `${Math.max(0, Math.min(1, ratio)) * 100}%`;
+  $('#timer-progress').setAttribute('aria-valuenow', String(Math.round(Math.max(0, Math.min(1, ratio)) * 100)));
+  $('#quiz-timer').classList.toggle('is-urgent', seconds <= 5);
+  if (seconds === 10 || seconds === 5 || seconds === 0) $('#timer-announcement').textContent = `剩餘 ${seconds} 秒`;
+}
+
+function beginTimer() {
+  stopTimer();
+  $('#timer-announcement').textContent = '';
+  $('#quiz-timer').classList.remove('is-frozen');
+  timer = createQuestionTimer({
+    seconds: QUESTION_SECONDS,
+    onTick: paintTimer,
+    onExpire: () => chooseTimeout()
+  });
+  timer.start();
+}
+
+function freezeTimer() {
+  stopTimer();
+  $('#quiz-timer').classList.add('is-frozen');
+}
 
 $('#current-year').textContent = String(new Date().getFullYear());
 
@@ -21,6 +55,8 @@ function showView(name) {
 }
 
 function goHome() {
+  gameGeneration++;
+  stopTimer();
   game = null;
   message.textContent = '';
   showView('home');
@@ -56,19 +92,22 @@ const categoryLabel = () => $('#category').selectedOptions[0].textContent;
 const difficultyLabel = () => $('#difficulty').selectedOptions[0].textContent;
 
 async function startGame({player, category, difficulty}) {
+  const generation = ++gameGeneration;
+  stopTimer();
   const button = form.querySelector('button[type="submit"]');
   if (button.disabled) return;
   button.disabled = true;
   message.textContent = '正在載入題庫…';
   try {
     const bank = await loadBank();
+    if (generation !== gameGeneration) return;
     const selected = drawQuestions(bank, { category, difficulty });
     game = createGame(selected, player, category, difficulty);
     message.textContent = '';
     showView('play');
     renderQuestion();
   } catch (error) {
-    message.textContent = `無法開始：${error instanceof Error ? error.message : '未知錯誤'}。請稍後重試。`;
+    if (generation === gameGeneration) message.textContent = `無法開始：${error instanceof Error ? error.message : '未知錯誤'}。請稍後重試。`;
   } finally {
     button.disabled = false;
   }
@@ -114,19 +153,37 @@ function renderQuestion() {
   $('#answer-feedback').hidden = true;
   $('#next-btn').hidden = true;
   $('#play-title').focus();
+  beginTimer();
 }
 
 function chooseAnswer(index) {
   if (!game || game.phase !== 'answering') return;
+  // Even if an interval callback was delayed, a click after the deadline is a timeout.
+  if (!timer || timer.isExpired()) { chooseTimeout(); return; }
+  freezeTimer();
   game = submitAnswer(game, index);
+  showFeedback(index, false);
+}
+
+function chooseTimeout() {
+  if (!game || game.phase !== 'answering') return;
+  freezeTimer();
+  paintTimer(0, 0);
+  game = submitTimeout(game);
+  showFeedback(null, true);
+}
+
+function showFeedback(index, timedOut) {
   const q = game.questions[game.index];
   for (const [i, option] of [...$('#answer-options').children].entries()) {
     option.disabled = true;
     if (i === q.correctIndex) option.classList.add('is-correct');
     else if (i === index) option.classList.add('is-wrong');
   }
-  const correct = index === q.correctIndex;
-  $('#answer-feedback-title').textContent = correct ? '✓ 回答正確！+100 分' : `✕ 回答錯誤。正確答案：${q.options[q.correctIndex]}`;
+  const correct = !timedOut && index === q.correctIndex;
+  $('#answer-feedback-title').textContent = timedOut
+    ? `⌛ 時間到！本題 0 分。正確答案：${q.options[q.correctIndex]}`
+    : correct ? '✓ 回答正確！+100 分' : `✕ 回答錯誤。正確答案：${q.options[q.correctIndex]}`;
   $('#answer-explanation').textContent = q.explanation;
   $('#answer-feedback').hidden = false;
   $('#next-btn').hidden = false;
@@ -145,6 +202,7 @@ $('#next-btn').addEventListener('click', () => {
 });
 
 function renderResults() {
+  stopTimer();
   const result = summarizeGame(game);
   $('#result-player').textContent = `${result.player}，你完成了本次挑戰。`;
   $('#result-score').replaceChildren(document.createTextNode(`${result.score} `));
@@ -159,11 +217,11 @@ function renderResults() {
     const li = document.createElement('li');
     const status = document.createElement('p');
     status.className = 'review-label';
-    status.textContent = `第 ${index + 1} 題 · ${item.correct ? '答對' : '答錯'}`;
+    status.textContent = `第 ${index + 1} 題 · ${item.timedOut ? '逾時' : item.correct ? '答對' : '答錯'}`;
     const title = document.createElement('strong');
     title.textContent = item.question;
     const chosen = document.createElement('p');
-    chosen.textContent = `你的答案：${item.options[item.chosenIndex]}`;
+    chosen.textContent = `你的答案：${item.timedOut ? '未作答（時間到）' : item.options[item.chosenIndex]}`;
     const correct = document.createElement('p');
     correct.textContent = `正確答案：${item.options[item.correctIndex]}`;
     const explanation = document.createElement('p');
@@ -174,6 +232,8 @@ function renderResults() {
   showView('result');
   $('#result-title').focus?.();
 }
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden) timer?.tick(); });
 
 $('#retry-btn').addEventListener('click', () => {
   if (!game || game.phase !== 'finished') return;

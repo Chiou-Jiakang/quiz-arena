@@ -33,3 +33,16 @@
 .review-list p{color:var(--muted);font-size:13px;line-height:1.65;margin:6px 0}
 .result-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:32px}
 @media(max-width:620px){.play-view,.result-view{margin:30px auto 60px}.question-card,.result-card{padding:20px}.option-grid{grid-template-columns:1fr}.result-stats{gap:42px}.result-actions>.btn{width:100%}.play-metrics strong{font-size:21px}}
+
+/* v0.3.0 — deadline-driven question timer */
+.quiz-timer{margin-top:26px;padding:17px 20px;border:1px solid rgba(157,132,255,.26);border-radius:16px;background:rgba(20,29,53,.86)}
+.quiz-timer__top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.quiz-timer__top strong{font-size:23px;font-variant-numeric:tabular-nums;color:#d3c5ff}
+.quiz-timer__track{height:10px;overflow:hidden;border-radius:99px;background:#202b43}
+.quiz-timer__track>div{width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#8268f1,#6be0ef);transition:width .1s linear}
+.quiz-timer.is-urgent{border-color:rgba(255,164,129,.55)}
+.quiz-timer.is-urgent .quiz-timer__top strong{color:#ffb1a0}
+.quiz-timer.is-urgent .quiz-timer__track>div{background:linear-gradient(90deg,#ff797e,#ffbb73)}
+.quiz-timer.is-frozen .quiz-timer__track>div{transition:none}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){.quiz-timer__track>div{transition:none}}
