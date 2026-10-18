@@ -1,40 +1,65 @@
-# 版本變更紀錄（Changelog）
+# Quiz Arena｜版本變更紀錄（CHANGELOG）
 
-本文件記錄版本層級的實際變更。各次工作細節參閱 `docs/DEVLOG.md`。
+本文件依**開發里程碑**記錄真正已發生的變更，而非每次編輯的流水帳。具體工作流程、測試操作及問題追蹤詳見 [DEVLOG](docs/DEVLOG.md)。日期採專案實際開發紀錄；版本標題**不代表已建立 GitHub Release 或 Git Tag**。
 
-## [Unreleased]
+## [Unreleased] — 後續規劃
 
-### 規劃中
+### Planned
+- v0.3.0：加入每題 20 秒倒數、逾時判定、計時器生命週期與測試。
+- 後續整合 Node.js / Express REST API、SQLite、後端答案驗證、排行榜及完整 MVP 驗收。
 
-- 定義 Quiz Arena MVP 需求、驗收條件與技術規劃。
+## [0.2.0] — 2026-10-18（前端單機問答里程碑）
 
-> 此時尚未發布任何程式版本；首次 Release 完成後才新增正式版本與發布日期。(2026/10/15)
->
-> ## [變更紀錄 0.1.0] - 2026/10/17 22:00
+### Added — Stage 1：題庫系統（2026-10-17）
+- 建立 120 題 JSON 題庫，四類知識 × 三種難度 × 每組十題，支援「綜合知識」跨類別模式。
+- 加入題目 ID、格式、四選項、正解索引與解析等資料欄位的驗證。
+- 實作篩選及 Fisher–Yates 不重複隨機抽題，題量不足時明確拒絕抽題。
+- 新增 `quiz-data.mjs`、題庫設計文件與 7 項 Node.js 自動化測試。
 
-### Added
-
-- 建立 Quiz Arena 深色科技競技場風格首頁。
-- 新增品牌介紹、遊戲規則與三步驟操作說明。
-- 新增玩家暱稱輸入與基本表單驗證。
-- 新增知識類別及難度設定介面。
-- 新增首頁與遊戲設定頁面切換功能。
-- 新增遊戲設定確認訊息。
-- 新增基本響應式網頁設計。
-- 建立 HTML、CSS、JavaScript 分離的前端專案結構。
+### Added — Stage 2：單機問答系統（2026-10-18）
+- 確認遊戲設定後載入題庫，實際進入十題問答流程。
+- 新增四選一互動、答題進度、正誤與解析、答對 100 分／答錯 0 分、作答鎖定及下一題切換。
+- 完成十題結算、正確率、逐題回顧與相同設定重新挑戰。
+- 新增獨立遊戲狀態及計分模組 `quiz-engine.mjs`、7 項邏輯測試及技術文件。
+- 將深色科技介面延伸到問答、回饋及結算畫面。
 
 ### Tested
-
-- 驗證首頁與靜態資源正常載入。
-- 驗證首頁及設定介面基本互動。
-- 驗證暱稱輸入、選項選擇與設定結果顯示。
-- 驗證返回首頁功能與基本響應式排版。
+- Stage 1 題庫測試：7 / 7 通過。
+- Stage 2 遊戲邏輯測試：7 / 7 通過；合計 **14 / 14**，0 failed。
+- 開發者已回報瀏覽器實際遊戲流程正常；尚未宣稱完成跨裝置、跨瀏覽器與端到端自動化測試。
 
 ### Known Limitations
+- v0.2.0 尚未加入每題 20 秒倒數或逾時判定。
+- 成績與進度只存在前端記憶體，重新整理後不保留。
+- 正確答案存在可讀取的前端 JSON，不能當作防作弊或正式排名依據。
+- 尚無 Express API、SQLite 持久化、正式排行榜與會員登入。
+- 題庫結構完成驗證，但題目內容尚待逐題事實審核；單一類別／難度目前僅十題，重玩性有限。
 
-- 尚未正式實作正式題目、計時器及計分系統。
-- 尚未建立 Node.js / Express 後端。
-- 尚未串接 SQLite 資料庫。
-- 尚未實作歷史成績與排行榜。
-- 遊戲設定完成之後，目前僅顯示純文字回饋。
-- 目前尚未加入 favicon。
+### Related Commits
+- [`5abee22`](https://github.com/Chiou-Jiakang/quiz-arena/commit/5abee22) — `feat: add validated multi-category question bank`
+- [`7cc94e2`](https://github.com/Chiou-Jiakang/quiz-arena/commit/7cc94e2) — `feat: implement single-player quiz gameplay`
+
+## [0.1.0] — 2026-10-17（首頁與遊戲設定原型）
+
+### Added
+- 建立 Quiz Arena 首頁、品牌視覺、深色科技風格、遊戲規則與三步驟說明。
+- 加入「開始挑戰」、「遊戲規則」入口及基本響應式版面。
+- 建立暱稱輸入／必填檢查、知識類別與難度選擇、規則摘要與返回首頁。
+- 使用原生 JavaScript DOM 與事件監聽完成基本畫面切換、表單提交及設定回饋。
+
+### Tested
+- 本機 HTTP 伺服器及靜態資源載入正常；人工檢查首頁、設定、返回功能與基本版面，未回報阻礙操作問題。
+
+### Known Limitations at This Milestone
+- 當時確認設定僅顯示文字訊息，正式答題與結算尚未實作（已由 v0.2.0 補齊）。
+- 當時沒有計時、後端、資料庫、排行榜；favicon 尚待補充。
+
+### Related Commits
+- [`a26df7d`](https://github.com/Chiou-Jiakang/quiz-arena/commit/a26df7d) — `feat: implement Quiz Arena homepage and game setup`
+- [`7e5f0f0`](https://github.com/Chiou-Jiakang/quiz-arena/commit/7e5f0f0) — `docs: document v0.1.0 features and test results`
+
+## [Planning / Initialization] — 2026-10-15 至 2026-10-17
+
+- 確認 MVP 規格、驗收條件、前後端技術路線與分階段交付方式。
+- 建立 Repository、PRD、README、CHANGELOG、DEVLOG 與 Git 忽略規則。
+- 對應 Git 歷史：`cda2d3a`（Initial commit）、`5c1af5a`（需求文件初始化）。
