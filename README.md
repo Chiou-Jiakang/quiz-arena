@@ -1,7 +1,7 @@
 # Quiz Arena｜知識競技場
 
-> **目前開發里程碑：v1.0.0-rc.1 — Release Candidate（發布候選版）**
-> **狀態：前端／Express／SQLite／排行榜已整合；65 項測試通過，資料庫完整性檢查與安全備份通過；正式 v1.0.0 仍待最後驗收及 Git Tag**
+> **目前開發里程碑：v1.0.0 — 本機單人全端 MVP 正式版**
+> **狀態：本機 MVP 功能與候選版 65/65 測試已通過；正式版程式碼定稿，需於安裝後再次驗證測試與 Git Tag；未進行公開部署安全認證**
 > **最後文件更新：2026-10-19**
 
 Quiz Arena 是一款以多元知識問答為主題的網頁競技遊戲。玩家輸入暱稱、選擇知識類別與難度後，即可進行十題四選一挑戰，查看答題回饋、得分和逐題結果。介面採深色科技競技場風格，並以響應式設計兼顧桌面與手機操作。
@@ -528,5 +528,40 @@ npm run db:check -- "backups\你的實際備份檔名.sqlite"
 
 - 第十七筆文件 Commit：[`d51b261`](https://github.com/Chiou-Jiakang/quiz-arena/commit/d51b261) — v0.7.0 累積式文件更新。
 - **第十八筆功能 Commit：** [`bcaf0b3`](https://github.com/Chiou-Jiakang/quiz-arena/commit/bcaf0b3) — `feat: prepare v1.0.0 release candidate with database validation and backup`。
-- **第十九筆文件 Commit：** 本次文件更新，尚未在本檔預填 SHA；需完成 `git commit`、`git push` 後以實際 Git 紀錄為準。
+- **第十九筆文件 Commit：** [`75b03f0`](https://github.com/Chiou-Jiakang/quiz-arena/commit/75b03f0) — 累積式 RC 文件更新。
 - 尚未建立 `v1.0.0` 正式版 Git Tag 或 GitHub Release。
+
+---
+
+## 15. v1.0.0 正式版本定稿（2026-10-19）
+
+本節記錄從 `v1.0.0-rc.1` 進入 **本機單人全端 MVP v1.0.0** 的版本整理；保留原本 v0.1.0～RC 的歷史章節及當時限制。正式版不等於公開網路營運服務。
+
+### 定稿範圍
+
+- 對齊 `package.json`、`package-lock.json`、Express 啟動訊息、`GET /api/health`、HTML 畫面版號為 `v1.0.0`。
+- 更新依賴版本號的回歸測試斷言；既有功能及資料庫 Schema 維持不變。
+- 沿用每場十題、20 秒伺服器截止時間、答題回饋、SQLite 場次／成績、排行榜及歷史回顧。
+- 保留 `npm run db:check`、`npm run db:backup`，資料庫檔與備份檔不納入版本庫。
+- 新增 `docs/RELEASE_NOTES_v1.0.0.md`，作為正式版本的內容、範圍及驗收紀錄。
+
+### 候選版已驗證結果（正式版需再執行）
+
+- `npm test`：**65 tests / 65 pass / 0 fail**（先前 RC 在開發者本機執行）。
+- 原始與最新備份檔獨立檢查：`valid: true`，Schema `1`，當時均為 `games: 3`、`results: 3`。這是完整性與可讀性驗證；未聲稱完成異機還原演練。
+- 本機 Express 可啟動、基本問答／排行榜操作由開發者確認；跨瀏覽器、負載與公開部署安全審查不包含在已驗收範圍。
+
+### 正式版快速指令
+
+```powershell
+npm install
+npm test
+npm run db:check
+npm start
+```
+
+開啟 `http://127.0.0.1:3000/`，檢查 `http://127.0.0.1:3000/api/health` 應回傳 `version: "v1.0.0"`。若要備份資料庫可執行 `npm run db:backup`。正式版本 Commit 與 Git Tag `v1.0.0` **僅能在本機最終驗收完成後建立**，文件不預先填入不存在的 SHA。
+
+### 正式版範圍限制
+
+本版本僅供本機練習與作品展示，沒有帳號驗證、正式授權、限流或防刷榜機制；請勿直接公開至網際網路作為可獲獎或具有可信排行榜的服務。

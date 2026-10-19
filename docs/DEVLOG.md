@@ -541,3 +541,29 @@ npm start
 - README 新增候選版操作方法、備份工具、測試證據及最新 Roadmap；CHANGELOG 在 v0.7.0 章節之前新增獨立 `[1.0.0-rc.1]` 紀錄。
 - 後續正式版驗收完成後，應另增正式發行紀錄，不得將此候選版事後重新命名為已通過的正式版。
 
+
+---
+
+## 2026-10-19｜Session 11：v1.0.0 正式版本定稿準備
+
+### 前提與證據
+- 第十九筆文件 Commit [`75b03f0`](https://github.com/Chiou-Jiakang/quiz-arena/commit/75b03f0) 已在 GitHub 確認；第十八筆 RC 功能 Commit 為 `bcaf0b3`。
+- RC 自動化測試實際結果為 `tests 65`、`pass 65`、`fail 0`。
+- RC 的 SQLite 來源與最新備份均 `valid: true`、Schema `1`，`games: 3`、`results: 3`，備份可獨立讀取。
+- 開發者回報基本遊戲流程正常；這些是 RC 驗收證據，不應誤寫成改版後已重新完成的測試。
+
+### 本次定稿修改
+- 將 RC 的程式、鎖檔、Express API、啟動訊息與前端顯示版本統一為 `v1.0.0`。
+- 同步更新原本斷言 RC 版號的 `tests/api-sqlite-http.test.mjs` 與 `tests/release-health.test.mjs`，保留其餘回歸測試。
+- 新增正式發行說明 `docs/RELEASE_NOTES_v1.0.0.md`。
+- README 更新現行版本與執行指引、CHANGELOG 追加 `[1.0.0]`；Session 00–10 與 RC 的原始紀錄完整保留。
+
+### 最後驗收與 Git 發布待辦
+1. 安裝正式版檔案後執行 `npm test`，預期仍為 65 項全通過。
+2. 執行 `npm run db:check`；使用 `npm start` 驗證 `/api/health` 版本為 `v1.0.0`，試玩與排行榜正常。
+3. 確認 `git status`、`git diff --check`，明確排除 `data/`、`backups/`、`STAGE2_README.txt`。
+4. 建立正式版 Commit 後再建立附註 Tag `v1.0.0`，將兩者推送 GitHub。
+5. 如需真正公開上線，仍須額外實作帳號授權、濫用防護及部署資安測試。
+
+### 版本聲明
+本次交付為 **本機全端 MVP 的正式版定稿檔案**；未見使用者本機驗收與 Git 推送結果前，不聲稱 `v1.0.0` 已正式在 GitHub 發布。

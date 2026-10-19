@@ -7,7 +7,7 @@ export function createApp(service) {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '16kb' }));
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: 'v1.0.0-rc.1', persistence: service.persistence }));
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: 'v1.0.0', persistence: service.persistence }));
   app.get('/api/scores', (req, res) => res.json(service.listScores(req.query.limit === undefined ? 20 : Number(req.query.limit))));
   app.get('/api/leaderboard', (req, res) => res.json(service.leaderboard(req.query.limit === undefined ? 10 : Number(req.query.limit))));
   app.get('/api/scores/:id', (req, res) => res.json(service.readScore(req.params.id)));

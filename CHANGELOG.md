@@ -2,12 +2,30 @@
 
 本文件依**開發里程碑**記錄真正已發生的變更，而非每次編輯的流水帳。具體工作流程、測試操作及問題追蹤詳見 [DEVLOG](docs/DEVLOG.md)。日期採專案實際開發紀錄；版本標題**不代表已建立 GitHub Release 或 Git Tag**。
 
-## [Unreleased] — 正式 v1.0.0 驗收與發行準備
+## [Unreleased] — v1.0.0 之後的改善規劃
 
 ### Planned
-- 依 `docs/RELEASE_CANDIDATE_CHECKLIST.md` 完成候選版人工驗收：限時、離線同步、排行榜、手機／鍵盤操作與題庫 HTTP 隔離。
-- 進行備份檔獨立還原與資料一致性演練；確認 Git 工作樹、資料庫排除規則及正式發行文件。
-- 正式驗收通過後才更新至 `v1.0.0`、建立 Git Tag／Release；公開網路部署尚需認證、濫用防護與資安審查。
+- 若考慮公開部署，須新增認證、授權、限流、防刷榜、資安審查及營運監控。
+- 後續補做多瀏覽器與手機尺寸、鍵盤可及性、離線／併發、異機備份還原及負載測試。
+
+## [1.0.0] — 2026-10-19（本機全端 MVP 正式定稿）
+
+### Changed
+- 將 `package.json`、`package-lock.json` 的版本統一為 `1.0.0`；啟動訊息、首頁版號、`GET /api/health` 回傳值一致使用 `v1.0.0`。
+- 更新既有 API 與發行版健康檢查測試的版本預期；保留舊版 RC 歷史章節，不事後改寫 RC 當時狀態。
+
+### Added
+- 新增 `docs/RELEASE_NOTES_v1.0.0.md`，記錄功能範圍、測試證據與尚未涵蓋的營運安全事項。
+
+### Verification
+- RC 階段：65 項測試全過；原始與備份 SQLite 均通過唯讀完整性驗證（當時各 3 筆場次／成績）；基本遊戲流程已人工確認。
+- **本次版本號變更尚須本機重新執行 `npm test` 並確認 `GET /api/health`**；在完成前不得宣稱最終版已驗收通過或 Git Tag 已推送。
+- 本機展示版本，尚未提供登入、防刷榜、速率限制及公開部署資安驗證。
+
+### Related Commits
+- [`bcaf0b3`](https://github.com/Chiou-Jiakang/quiz-arena/commit/bcaf0b3) — RC 品質與資料庫工具。
+- [`75b03f0`](https://github.com/Chiou-Jiakang/quiz-arena/commit/75b03f0) — RC 累積文件。
+- 正式版程式碼 Commit 與 `v1.0.0` Tag：須於本機驗收後再建立。
 
 ## [1.0.0-rc.1] — 2026-10-19（正式版候選／品質驗收里程碑）
 
